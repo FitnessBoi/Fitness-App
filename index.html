@@ -3,132 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap" rel="stylesheet">
+    <title>The Impossible Quiz</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        /* Reset styling for consistent appearance */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Body styling */
+        /* Basic styles for intro and quiz */
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            margin: 0;
             font-family: 'Gochi Hand', cursive; /* Use Gochi Hand font */
-            background-image: url('background-image.png'); /* Use your uploaded background image here */
+            background-image: url('background-image.png'); /* Use your uploaded background image */
             background-size: cover;
         }
 
-        /* Quiz container */
-        .quiz-container {
-            position: relative;
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
-            border-radius: 20px;
-            background-image: url('background.png'); /* Path to your image */
-            background-size: cover;
-            background-position: center;
-            color: #000;
+        .container {
             text-align: center;
-            overflow: hidden;
+            color: white;
         }
 
-        /* Question number */
-        .question-number {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 18px;
+        #quiz-container {
+            display: none; /* Initially hide quiz container */
         }
 
-        /* Question text styling */
-        .question {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 60px 0 20px;
-        }
-
-        /* Answer button styling */
-        .answer {
-            display: block;
-            width: 100%;
-            margin: 10px 0;
-            padding: 15px;
-            font-size: 18px;
-            color: #fff;
+        #start-button {
+            padding: 15px 30px;
+            font-size: 1.5em;
             background-color: #ff79c6;
+            color: white;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
-        .answer:hover {
+        #start-button:hover {
             background-color: #ff92e1;
         }
 
-        /* Heart container */
-        .hearts {
-            display: flex;
-            justify-content: center;
+        #question {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .options-container {
             margin-top: 20px;
         }
 
-        /* Individual heart styling */
-        .heart {
-            width: 30px;
-            height: 30px;
-            margin: 0 5px;
-            background-color: black;
-            border-radius: 50%;
+        .option {
+            padding: 15px;
+            background-color: #00c4cc;
+            color: white;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        /* Styling for a lost heart */
-        .heart.lost {
-            background-color: red;
+        .option:hover {
+            background-color: #ff5da2;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1 id="intro-title">Welcome to The Impossible Quiz!</h1>
+        <button id="start-button" onclick="startQuiz()">Start Quiz</button>
 
-    <!-- Background Music -->
-    <audio id="background-audio" autoplay loop>
-        <source src="background-music.mp3" type="audio/mpeg"> <!-- Adjust path if necessary -->
-        Your browser does not support the audio element.
-    </audio>
-
-    <div class="quiz-container">
-        <!-- Question number -->
-        <div class="question-number">3/15</div>
-
-        <!-- Question text -->
-        <div class="question">HOW LONG WILL YOU QUIT ALCOHOL?</div>
-
-        <!-- Answer buttons -->
-        <button class="answer">UNTIL HAPPY HOUR</button>
-        <button class="answer">COUPLE TOO TREE MONTHS</button>
-        <button class="answer">I'LL NEVER DRINK AGAIN!</button>
-        <button class="answer">DON'T TELL ME WHAT TO DO</button>
-
-        <!-- Heart container -->
-        <div class="hearts">
-            <div class="heart"></div>
-            <div class="heart"></div>
-            <div class="heart lost"></div>
+        <div id="quiz-container">
+            <p id="question"></p>
+            <div id="options" class="options-container"></div>
         </div>
     </div>
 
+    <audio id="background-audio" loop>
+        <source src="background-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <audio id="correct-sound">
+        <source src="correct-sound.wav" type="audio/wav">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        let currentQuestionIndex = 0;
+        const questions = [
+            { question: "HOW LONG WILL YOU QUIT ALCOHOL?", options: ["UNTIL HAPPY HOUR", "COUPLE TOO TREE MONTHS", "I'LL NEVER DRINK AGAIN!", "DON'T TELL ME WHAT TO DO"] },
+            // Add more questions here
+        ];
+
+        function startQuiz() {
+            // Play background music
+            const audio = document.getElementById('background-audio');
+            audio.play().catch(error => {
+                console.log('Audio playback failed:', error);
+            });
+
+            // Hide intro and show quiz container
+            document.getElementById('intro-title').style.display = 'none';
+            document.getElementById('start-button').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+
+            // Show the first question
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById('question').innerText = currentQuestion.question;
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = ''; // Clear previous options
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('div');
+                button.className = 'option';
+                button.innerText = option;
+                button.onclick = selectAnswer; // Attach the click event
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer() {
+            // Logic for selecting an answer
+            // For now, just log the answer and go to the next question
+            console.log(this.innerText); // Logs the selected answer
+            currentQuestionIndex++; // Move to next question
+            if (currentQuestionIndex < questions.length) {
+                showQuestion(); // Show next question
+            } else {
+                alert('Quiz Completed!'); // Quiz completion logic here
+                // Reset or redirect
+            }
+        }
+    </script>
 </body>
 </html>
