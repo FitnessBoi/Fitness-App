@@ -5,61 +5,54 @@ body {
     height: 100vh;
     margin: 0;
     font-family: 'Gochi Hand', cursive; /* Use Gochi Hand font */
-    background-image: url('background-image.png'); /* Use your uploaded background image here */
+    background-image: url('background-image.png'); /* Use your uploaded background image */
     background-size: cover;
+    color: white;
 }
 
-.quiz-container {
-    position: relative;
-    width: 90%;
-    max-width: 400px;
-    padding: 20px;
-    border-radius: 20px;
-    background-image: url('background.png'); 
-    background-size: cover;
-    background-position: center;
-    color: #000;
+.container {
     text-align: center;
-    overflow: hidden;
 }
 
-.question-number {
-    font-size: 1.2em;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: #000;
-    background: #fff;
-    padding: 5px 10px;
-    border-radius: 20px;
-}
-
-.question-text {
+#start-button {
+    padding: 15px 30px;
     font-size: 1.5em;
-    margin: 20px 0;
-}
-
-.answer-option {
-    background-color: #00c4cc;
-    color: #fff;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 25px;
-    font-size: 1.2em;
+    background-color: #ff79c6;
+    color: white;
+    border: none;
+    border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-.answer-option:hover {
-    background-color: #ff5da2;
+#start-button:hover {
+    background-color: #ff92e1;
 }
 
-.hearts {
+.quiz-container {
+    display: none; /* Initially hide quiz container */
+    text-align: center;
+}
+
+#question {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.options-container {
     margin-top: 20px;
-    font-size: 1.5em;
 }
 
-.heart {
-    color: #ff0000;
-    margin: 0 5px;
+.option {
+    padding: 15px;
+    background-color: #00c4cc;
+    color: white;
+    margin: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.option:hover {
+    background-color: #ff5da2;
 }
