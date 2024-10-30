@@ -25,6 +25,32 @@
             font-family: 'Gochi Hand', cursive; /* Apply Gochi Hand font */
         }
 
+        /* Start screen styling */
+        .start-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .start-button {
+            padding: 20px 40px;
+            font-size: 24px;
+            color: #fff;
+            background-color: #ff79c6;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'Gochi Hand', cursive; /* Apply font here for start button */
+        }
+
+        .start-button:hover {
+            background-color: #ff92e1;
+        }
+
         /* Quiz container */
         .quiz-container {
             position: relative;
@@ -37,6 +63,7 @@
             background-position: center;
             color: #000;
             text-align: center;
+            display: none; /* Initially hide quiz container */
         }
 
         /* Question number */
@@ -138,7 +165,7 @@
     <button class="start-button">Start</button>
 </div>
 
-<div class="quiz-container" style="display: none;">
+<div class="quiz-container">
     <!-- Question number -->
     <div class="question-number">1/10</div>
 
