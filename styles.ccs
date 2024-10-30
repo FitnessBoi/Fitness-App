@@ -1,73 +1,123 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2761
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+/* Reset styling for consistent appearance */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-\f0\fs24 \cf0 body \{\
-    display: flex;\
-    justify-content: center;\
-    align-items: center;\
-    height: 100vh;\
-    margin: 0;\
-    font-family: 'Arial', sans-serif;\
-    background-image: url('background-image.png'); /* Use your uploaded background image here */\
-    background-size: cover;\
-\}\
-\
-.quiz-container \{\
-    position: relative;\
-    width: 90%;\
-    max-width: 400px;\
-    padding: 20px;\
-    border-radius: 20px;\
-    background-image: url('background.png'); \
-    background-size: cover;\
-    background-position: center;\
-    color: #000;\
-    text-align: center;\
-    overflow: hidden;\
-\}\
-\
-.question-number \{\
-    font-size: 1.2em;\
-    position: absolute;\
-    top: 10px;\
-    left: 10px;\
-    color: #000;\
-    background: #fff;\
-    padding: 5px 10px;\
-    border-radius: 20px;\
-\}\
-\
-.question-text \{\
-    font-size: 1.5em;\
-    margin: 20px 0;\
-\}\
-\
-.answer-option \{\
-    background-color: #00c4cc;\
-    color: #fff;\
-    padding: 15px;\
-    margin: 10px 0;\
-    border-radius: 25px;\
-    font-size: 1.2em;\
-    cursor: pointer;\
-    transition: background-color 0.3s;\
-\}\
-\
-.answer-option:hover \{\
-    background-color: #ff5da2;\
-\}\
-\
-.hearts \{\
-    margin-top: 20px;\
-    font-size: 1.5em;\
-\}\
-\
-.heart \{\
-    color: #ff0000;\
-    margin: 0 5px;\
-\}\
+/* Body styling */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    font-family: 'Gochi Hand', cursive; /* Apply Gochi Hand font */
+}
+
+/* Quiz container */
+.quiz-container {
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 20px;
+    background-image: url('background.png'); /* Path to your image */
+    background-size: cover;
+    background-position: center;
+    color: #000;
+    text-align: center;
+}
+
+/* Question number */
+.question-number {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-family: 'Gochi Hand', cursive; /* Apply Gochi Hand font */
+}
+
+/* Question text styling */
+.question {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 60px 0 20px;
+    font-family: 'Gochi Hand', cursive; /* Apply font here */
+}
+
+/* Answer button styling */
+.answer {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 15px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #ff79c6;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-family: 'Gochi Hand', cursive; /* Apply font here for buttons */
+}
+
+.answer:hover {
+    background-color: #ff92e1;
+}
+
+/* Heart container */
+.hearts {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Individual heart styling */
+.heart {
+    width: 30px;
+    height: 30px;
+    margin: 0 5px;
+    background-color: red; /* Filled heart color */
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); /* Heart shape */
+}
+
+/* Styling for a lost heart */
+.heart.lost {
+    background-color: black; /* Color when lost */
+}
+
+/* Styling for the loser screen */
+.loser-screen {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    text-align: center;
+}
+
+.loser-text {
+    font-size: 48px;
+    font-family: 'Gochi Hand', cursive; /* Apply Gochi Hand font */
+}
+
+.retry-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #ff79c6;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-family: 'Gochi Hand', cursive; /* Apply font here for buttons */
+}
+
+.retry-button:hover {
+    background-color: #ff92e1;
 }
