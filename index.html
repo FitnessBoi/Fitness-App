@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap" rel="stylesheet">
     <style>
         /* Reset styling for consistent appearance */
         * {
@@ -19,7 +22,7 @@
             align-items: center;
             height: 100vh;
             background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
+            font-family: 'Gochi Hand', cursive; /* Apply Gochi Hand font */
         }
 
         /* Quiz container */
@@ -35,12 +38,6 @@
             color: #000;
             text-align: center;
             overflow: hidden;
-            display: none; /* Initially hidden */
-        }
-
-        /* Start screen */
-        .start-screen {
-            text-align: center;
         }
 
         /* Question number */
@@ -92,44 +89,65 @@
             width: 30px;
             height: 30px;
             margin: 0 5px;
-            background-color: red;
-            clip-path: polygon(50% 0%, 100% 35%, 100% 100%, 50% 65%, 0% 100%, 0% 35%);
+            background-color: red; /* Filled heart color */
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); /* Heart shape */
         }
 
         /* Styling for a lost heart */
         .heart.lost {
-            background-color: black;
+            background-color: black; /* Color when lost */
         }
 
-        /* Loser screen */
+        /* Styling for the loser screen */
         .loser-screen {
-            display: none; /* Initially hidden */
+            display: none;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
             text-align: center;
+        }
+
+        .loser-text {
+            font-size: 48px;
+            font-family: 'Gochi Hand', cursive; /* Apply Gochi Hand font */
+        }
+
+        .retry-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #ff79c6;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .retry-button:hover {
+            background-color: #ff92e1;
         }
     </style>
 </head>
 <body>
 
 <div class="start-screen">
-    <h1>Welcome to the Quiz!</h1>
-    <button class="start-button" style="padding: 20px; font-size: 24px; background-color: #ff79c6; border: none; border-radius: 10px; cursor: pointer;">Start</button>
+    <button class="start-button" style="padding: 20px; font-size: 24px; background-color: #ff79c6; color: white; border: none; border-radius: 10px; cursor: pointer;">START</button>
 </div>
 
-<div class="quiz-container">
+<div class="quiz-container" style="display: none;">
     <!-- Question number -->
-    <div class="question-number">1/8</div>
+    <div class="question-number">1/5</div>
 
     <!-- Question text -->
-    <div class="question"></div>
+    <div class="question">WHAT IS THE CAPITAL OF FRANCE?</div>
 
     <!-- Answer buttons -->
-    <button class="answer"></button>
-    <button class="answer"></button>
-    <button class="answer"></button>
-    <button class="answer"></button>
+    <button class="answer">Paris</button>
+    <button class="answer">London</button>
+    <button class="answer">Berlin</button>
+    <button class="answer">Madrid</button>
 
     <!-- Heart container -->
     <div class="hearts">
@@ -140,77 +158,73 @@
 </div>
 
 <div class="loser-screen">
-    <h1>You're a loser!</h1>
-    <button class="retry-button" style="padding: 20px; font-size: 24px; background-color: #ff79c6; border: none; border-radius: 10px; cursor: pointer;">Retry</button>
+    <div class="loser-text">YOU'RE A LOSER!</div>
+    <button class="retry-button">Retry</button>
 </div>
+
+<audio id="background-music" loop>
+    <source src="background-music.mp3" type="audio/mpeg">
+</audio>
+<audio id="correct-sound">
+    <source src="correct-sound.wav" type="audio/wav">
+</audio>
+<audio id="special-sound">
+    <source src="dayandnight.mp3" type="audio/mpeg">
+</audio>
 
 <script>
     const questions = [
         {
-            text: "WHAT ARE YOUR FAVORITE FRUITS?",
-            answers: ["Apple", "Banana", "Orange", "Grape"],
-            correct: ["Apple", "Banana"]
+            text: "WHAT IS THE CAPITAL OF FRANCE?",
+            answers: ["Paris", "London", "Berlin", "Madrid"],
+            correct: ["Paris"],
         },
         {
-            text: "WHICH COLORS DO YOU LIKE?",
-            answers: ["Red", "Blue", "Green", "Yellow"],
-            correct: ["Blue", "Green"]
+            text: "HOW LONG WILL YOU QUIT ALCOHOL?",
+            answers: ["UNTIL HAPPY HOUR", "COUPLE TOO TREE MONTHS", "I'LL NEVER DRINK AGAIN!", "DON'T TELL ME WHAT TO DO"],
+            correct: ["I'LL NEVER DRINK AGAIN!"],
         },
         {
-            text: "WHAT ARE YOUR HOBBIES?",
-            answers: ["Reading", "Sports", "Gaming", "Cooking"],
-            correct: ["Reading", "Gaming"]
+            text: "WHAT IS THE LARGEST PLANET IN OUR SOLAR SYSTEM?",
+            answers: ["Earth", "Mars", "Jupiter", "Saturn"],
+            correct: ["Jupiter"],
         },
         {
-            text: "WHAT TYPES OF PETS DO YOU LIKE?",
-            answers: ["Dogs", "Cats", "Birds", "Fish"],
-            correct: ["Dogs", "Cats"]
+            text: "WHAT ELEMENT DOES 'O' REPRESENT IN THE PERIODIC TABLE?",
+            answers: ["Oxygen", "Gold", "Hydrogen", "Osmium"],
+            correct: ["Oxygen"],
         },
         {
-            text: "WHICH SPORTS DO YOU PLAY?",
-            answers: ["Soccer", "Basketball", "Tennis", "Swimming"],
-            correct: ["Soccer", "Basketball"]
+            text: "WHICH LANGUAGE IS SPOKEN IN BRAZIL?",
+            answers: ["Spanish", "Portuguese", "French", "English"],
+            correct: ["Portuguese"],
         },
         {
-            text: "WHICH LANGUAGES DO YOU SPEAK?",
-            answers: ["English", "Spanish", "French", "German"],
-            correct: ["English", "Spanish"] // Correct answers for this question
+            text: "WHAT IS THE CAPITAL OF JAPAN?",
+            answers: ["Seoul", "Tokyo", "Beijing", "Bangkok"],
+            correct: ["Tokyo"],
         },
-        {
-            text: "WHAT KIND OF FOOD DO YOU LIKE?",
-            answers: ["Italian", "Chinese", "Mexican", "Indian"],
-            correct: ["Italian", "Mexican"]
-        },
-        {
-            text: "WHAT ARE YOUR FAVORITE SEASONS?",
-            answers: ["Spring", "Summer", "Autumn", "Winter"],
-            correct: ["Summer", "Autumn"]
-        }
     ];
 
     let currentQuestion = 0;
     let heartsLost = 0;
 
-    const backgroundMusic = new Audio('background-music.mp3');
-    const correctSound = new Audio('correct-sound.wav');
-    const specialSound = new Audio('dayandnight.mp3');
-
-    background-music.loop = true; // Loop the background music
-    background-music.volume = 0.1; // Set background music volume to 10%
-    dayandnight.volume = 1;
-
+    const backgroundMusic = document.getElementById('background-music');
+    const correctSound = document.getElementById('correct-sound');
+    const specialSound = document.getElementById('special-sound');
+    const questionContainer = document.querySelector('.quiz-container');
+    const questionNumber = document.querySelector('.question-number');
+    const questionText = document.querySelector('.question');
+    
     function startQuiz() {
         document.querySelector('.start-screen').style.display = 'none'; // Hide start screen
-        document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
-        backgroundMusic.play(); // Play background music
+        questionContainer.style.display = 'block'; // Show quiz container
         loadQuestion(); // Load the first question
+        backgroundMusic.volume = 0.5; // Set volume level for background music
+        backgroundMusic.play(); // Play background music
     }
 
     function loadQuestion() {
-        const questionContainer = document.querySelector('.quiz-container');
-        const questionText = document.querySelector('.question');
-        const questionNumber = document.querySelector('.question-number');
-
         if (currentQuestion < questions.length) {
             questionNumber.textContent = `${currentQuestion + 1}/${questions.length}`;
             questionText.textContent = questions[currentQuestion].text;
@@ -249,21 +263,24 @@
     }
 
     function showLoserScreen() {
-        const quizContainer = document.querySelector('.quiz-container');
-        const loserScreen = document.querySelector('.loser-screen');
-        quizContainer.style.display = 'none'; // Hide quiz container
-        loserScreen.style.display = 'flex'; // Show loser screen
+        questionContainer.style.display = 'none'; // Hide quiz container
+        document.querySelector('.loser-screen').style.display = 'flex'; // Show loser screen
+        backgroundMusic.pause(); // Pause background music
     }
 
-    document.querySelector('.start-button').onclick = startQuiz;
+    document.querySelector('.start-button').onclick = startQuiz; // Start quiz on button click
     document.querySelector('.retry-button').onclick = () => {
-        heartsLost = 0; // Reset hearts lost
         currentQuestion = 0; // Reset question index
+        heartsLost = 0; // Reset lost hearts
+        const hearts = document.querySelectorAll('.heart');
+        hearts.forEach(heart => heart.classList.remove('lost')); // Reset heart colors
         document.querySelector('.loser-screen').style.display = 'none'; // Hide loser screen
-        document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
-        loadQuestion(); // Load the first question
-        backgroundMusic.play(); // Play background music
+        questionContainer.style.display = 'none'; // Hide quiz container
+        document.querySelector('.start-screen').style.display = 'block'; // Show start screen
+        backgroundMusic.currentTime = 0; // Reset background music to start
+        backgroundMusic.play(); // Restart background music
     };
 </script>
+
 </body>
 </html>
