@@ -226,7 +226,7 @@
         if (correctAnswers.includes(selectedAnswer)) {
             if (currentQuestion === 5) { // Check if it's question 6 (index 5)
                 const specialSound = document.getElementById('special-sound');
-                specialSound.volume = 2.0; // Set volume to full
+                specialSound.volume = 1.0; // Set volume to full
                 specialSound.play(); // Play special sound for question 6
             } else {
                 document.getElementById('correct-sound').play(); // Play standard correct sound
@@ -248,7 +248,7 @@
         document.querySelector('.start-screen').style.display = 'none'; // Hide start screen
         document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
         const backgroundMusic = document.getElementById('background-music');
-        backgroundMusic.volume = 0.1; // Lower background music volume
+        backgroundMusic.volume = 0.3; // Lower background music volume
         backgroundMusic.play(); // Play background music
         loadQuestion(); // Load the first question
     }
