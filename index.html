@@ -37,7 +37,6 @@
             background-position: center;
             color: #000;
             text-align: center;
-            overflow: hidden;
         }
 
         /* Question number */
@@ -56,6 +55,7 @@
             font-size: 24px;
             font-weight: bold;
             margin: 60px 0 20px;
+            font-family: 'Gochi Hand', cursive; /* Apply font here for question text */
         }
 
         /* Answer button styling */
@@ -71,6 +71,7 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-family: 'Gochi Hand', cursive; /* Apply font here for answer buttons */
         }
 
         .answer:hover {
@@ -123,6 +124,7 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-family: 'Gochi Hand', cursive; /* Apply font here for buttons */
         }
 
         .retry-button:hover {
@@ -133,21 +135,21 @@
 <body>
 
 <div class="start-screen">
-    <button class="start-button" style="padding: 20px; font-size: 24px; background-color: #ff79c6; color: white; border: none; border-radius: 10px; cursor: pointer;">START</button>
+    <button class="start-button">Start</button>
 </div>
 
 <div class="quiz-container" style="display: none;">
     <!-- Question number -->
-    <div class="question-number">1/5</div>
+    <div class="question-number">1/10</div>
 
     <!-- Question text -->
-    <div class="question">WHAT IS THE CAPITAL OF FRANCE?</div>
+    <div class="question">What is the capital of France?</div>
 
     <!-- Answer buttons -->
     <button class="answer">Paris</button>
-    <button class="answer">London</button>
     <button class="answer">Berlin</button>
     <button class="answer">Madrid</button>
+    <button class="answer">Lisbon</button>
 
     <!-- Heart container -->
     <div class="hearts">
@@ -158,129 +160,20 @@
 </div>
 
 <div class="loser-screen">
-    <div class="loser-text">YOU'RE A LOSER!</div>
+    <div class="loser-text">You're a loser!</div>
     <button class="retry-button">Retry</button>
 </div>
 
 <audio id="background-music" loop>
-    <source src="background-music.mp3" type="audio/mpeg">
+    <source src="background-music.mp3" type="audio/mp3">
 </audio>
 <audio id="correct-sound">
     <source src="correct-sound.wav" type="audio/wav">
 </audio>
-<audio id="special-sound">
-    <source src="dayandnight.mp3" type="audio/mpeg">
+<audio id="dayandnight-sound">
+    <source src="dayandnight.mp3" type="audio/mp3">
 </audio>
 
-<script>
-    const questions = [
-        {
-            text: "WHAT IS THE CAPITAL OF FRANCE?",
-            answers: ["Paris", "London", "Berlin", "Madrid"],
-            correct: ["Paris"],
-        },
-        {
-            text: "HOW LONG WILL YOU QUIT ALCOHOL?",
-            answers: ["UNTIL HAPPY HOUR", "COUPLE TOO TREE MONTHS", "I'LL NEVER DRINK AGAIN!", "DON'T TELL ME WHAT TO DO"],
-            correct: ["I'LL NEVER DRINK AGAIN!"],
-        },
-        {
-            text: "WHAT IS THE LARGEST PLANET IN OUR SOLAR SYSTEM?",
-            answers: ["Earth", "Mars", "Jupiter", "Saturn"],
-            correct: ["Jupiter"],
-        },
-        {
-            text: "WHAT ELEMENT DOES 'O' REPRESENT IN THE PERIODIC TABLE?",
-            answers: ["Oxygen", "Gold", "Hydrogen", "Osmium"],
-            correct: ["Oxygen"],
-        },
-        {
-            text: "WHICH LANGUAGE IS SPOKEN IN BRAZIL?",
-            answers: ["Spanish", "Portuguese", "French", "English"],
-            correct: ["Portuguese"],
-        },
-        {
-            text: "WHAT IS THE CAPITAL OF JAPAN?",
-            answers: ["Seoul", "Tokyo", "Beijing", "Bangkok"],
-            correct: ["Tokyo"],
-        },
-    ];
-
-    let currentQuestion = 0;
-    let heartsLost = 0;
-
-    const backgroundMusic = document.getElementById('background-music');
-    const correctSound = document.getElementById('correct-sound');
-    const specialSound = document.getElementById('special-sound');
-    const questionContainer = document.querySelector('.quiz-container');
-    const questionNumber = document.querySelector('.question-number');
-    const questionText = document.querySelector('.question');
-    
-    function startQuiz() {
-        document.querySelector('.start-screen').style.display = 'none'; // Hide start screen
-        questionContainer.style.display = 'block'; // Show quiz container
-        loadQuestion(); // Load the first question
-        backgroundMusic.volume = 0.5; // Set volume level for background music
-        backgroundMusic.play(); // Play background music
-    }
-
-    function loadQuestion() {
-        if (currentQuestion < questions.length) {
-            questionNumber.textContent = `${currentQuestion + 1}/${questions.length}`;
-            questionText.textContent = questions[currentQuestion].text;
-            const buttons = questionContainer.querySelectorAll('.answer');
-            buttons.forEach((button, index) => {
-                button.textContent = questions[currentQuestion].answers[index];
-                button.onclick = () => checkAnswer(questions[currentQuestion].answers[index]);
-            });
-        } else {
-            questionText.textContent = "Quiz Finished!";
-            const buttons = questionContainer.querySelectorAll('.answer');
-            buttons.forEach(button => button.style.display = 'none');
-        }
-    }
-
-    function checkAnswer(selectedAnswer) {
-        const correctAnswers = questions[currentQuestion].correct;
-        if (correctAnswers.includes(selectedAnswer)) {
-            if (currentQuestion === 5) { // Check if it's question 6 (index 5)
-                specialSound.volume = 0.8; // Increase volume of the special sound
-                specialSound.play(); // Play special sound for question 6
-            } else {
-                correctSound.play(); // Play standard correct sound
-            }
-            currentQuestion++; // Load next question
-            loadQuestion();
-        } else {
-            heartsLost++;
-            const hearts = document.querySelectorAll('.heart');
-            hearts[heartsLost - 1].classList.add('lost'); // Change heart color to black
-
-            if (heartsLost >= 3) {
-                showLoserScreen(); // Show loser screen if all hearts are lost
-            }
-        }
-    }
-
-    function showLoserScreen() {
-        questionContainer.style.display = 'none'; // Hide quiz container
-        document.querySelector('.loser-screen').style.display = 'flex'; // Show loser screen
-        backgroundMusic.pause(); // Pause background music
-    }
-
-    document.querySelector('.start-button').onclick = startQuiz; // Start quiz on button click
-    document.querySelector('.retry-button').onclick = () => {
-        currentQuestion = 0; // Reset question index
-        heartsLost = 0; // Reset lost hearts
-        const hearts = document.querySelectorAll('.heart');
-        hearts.forEach(heart => heart.classList.remove('lost')); // Reset heart colors
-        document.querySelector('.loser-screen').style.display = 'none'; // Hide loser screen
-        questionContainer.style.display = 'none'; // Hide quiz container
-        document.querySelector('.start-screen').style.display = 'block'; // Show start screen
-        backgroundMusic.currentTime = 0; // Reset background music to start
-        backgroundMusic.play(); // Restart background music
-    };
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
