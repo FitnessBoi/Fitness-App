@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        /* Reset styling for consistent appearance */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Body styling */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Quiz container */
+        .quiz-container {
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 20px;
+            background-image: url('background.png'); /* Path to your image */
+            background-size: cover;
+            background-position: center;
+            color: #000;
+            text-align: center;
+            overflow: hidden;
+            display: none; /* Initially hidden */
+        }
+
+        /* Start screen */
+        .start-screen {
+            text-align: center;
+        }
+
+        /* Question number */
+        .question-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 18px;
+        }
+
+        /* Question text styling */
+        .question {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 60px 0 20px;
+        }
+
+        /* Answer button styling */
+        .answer {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 15px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #ff79c6;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .answer:hover {
+            background-color: #ff92e1;
+        }
+
+        /* Heart container */
+        .hearts {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* Individual heart styling */
+        .heart {
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            background-color: red;
+            clip-path: polygon(50% 0%, 100% 35%, 100% 100%, 50% 65%, 0% 100%, 0% 35%);
+        }
+
+        /* Styling for a lost heart */
+        .heart.lost {
+            background-color: black;
+        }
+
+        /* Loser screen */
+        .loser-screen {
+            display: none; /* Initially hidden */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="start-screen">
+    <h1>Welcome to the Quiz!</h1>
+    <button class="start-button" style="padding: 20px; font-size: 24px; background-color: #ff79c6; border: none; border-radius: 10px; cursor: pointer;">Start</button>
+</div>
+
+<div class="quiz-container">
+    <!-- Question number -->
+    <div class="question-number">1/8</div>
+
+    <!-- Question text -->
+    <div class="question"></div>
+
+    <!-- Answer buttons -->
+    <button class="answer"></button>
+    <button class="answer"></button>
+    <button class="answer"></button>
+    <button class="answer"></button>
+
+    <!-- Heart container -->
+    <div class="hearts">
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+    </div>
+</div>
+
+<div class="loser-screen">
+    <h1>You're a loser!</h1>
+    <button class="retry-button" style="padding: 20px; font-size: 24px; background-color: #ff79c6; border: none; border-radius: 10px; cursor: pointer;">Retry</button>
+</div>
+
+<audio id="background-music" loop>
+    <source src="background-music.mp3" type="audio/mpeg">
+</audio>
+<audio id="correct-sound">
+    <source src="correct-sound.wav" type="audio/wav">
+</audio>
+<audio id="special-sound">
+    <source src="dayandnight.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    const questions = [
+        {
+            text: "WHAT ARE YOUR FAVORITE FRUITS?",
+            answers: ["Apple", "Banana", "Orange", "Grape"],
+            correct: ["Apple", "Banana"]
+        },
+        {
+            text: "WHICH COLORS DO YOU LIKE?",
+            answers: ["Red", "Blue", "Green", "Yellow"],
+            correct: ["Blue", "Green"]
+        },
+        {
+            text: "WHAT ARE YOUR HOBBIES?",
+            answers: ["Reading", "Sports", "Gaming", "Cooking"],
+            correct: ["Reading", "Gaming"]
+        },
+        {
+            text: "WHAT TYPES OF PETS DO YOU LIKE?",
+            answers: ["Dogs", "Cats", "Birds", "Fish"],
+            correct: ["Dogs", "Cats"]
+        },
+        {
+            text: "WHICH SPORTS DO YOU PLAY?",
+            answers: ["Soccer", "Basketball", "Tennis", "Swimming"],
+            correct: ["Soccer", "Basketball"]
+        },
+        {
+            text: "WHICH LANGUAGES DO YOU SPEAK?",
+            answers: ["English", "Spanish", "French", "German"],
+            correct: ["English", "Spanish"] // Correct answers for this question
+        },
+        {
+            text: "WHAT KIND OF FOOD DO YOU LIKE?",
+            answers: ["Italian", "Chinese", "Mexican", "Indian"],
+            correct: ["Italian", "Mexican"]
+        },
+        {
+            text: "WHAT ARE YOUR FAVORITE SEASONS?",
+            answers: ["Spring", "Summer", "Autumn", "Winter"],
+            correct: ["Summer", "Autumn"]
+        }
+    ];
+
+    let currentQuestion = 0;
+    let heartsLost = 0;
+
+    function loadQuestion() {
+        const questionContainer = document.querySelector('.quiz-container');
+        const questionText = document.querySelector('.question');
+        const questionNumber = document.querySelector('.question-number');
+
+        if (currentQuestion < questions.length) {
+            questionNumber.textContent = `${currentQuestion + 1}/${questions.length}`;
+            questionText.textContent = questions[currentQuestion].text;
+            const buttons = questionContainer.querySelectorAll('.answer');
+            buttons.forEach((button, index) => {
+                button.textContent = questions[currentQuestion].answers[index];
+                button.onclick = () => checkAnswer(questions[currentQuestion].answers[index]);
+            });
+        } else {
+            questionText.textContent = "Quiz Finished!";
+            const buttons = questionContainer.querySelectorAll('.answer');
+            buttons.forEach(button => button.style.display = 'none');
+        }
+    }
+
+    function checkAnswer(selectedAnswer) {
+        const correctAnswers = questions[currentQuestion].correct;
+        if (correctAnswers.includes(selectedAnswer)) {
+            if (currentQuestion === 5) { // Check if it's question 6 (index 5)
+                const specialSound = document.getElementById('special-sound');
+                specialSound.volume = 1.0; // Set volume to full
+                specialSound.play(); // Play special sound for question 6
+            } else {
+                document.getElementById('correct-sound').play(); // Play standard correct sound
+            }
+            currentQuestion++; // Load next question
+            loadQuestion();
+        } else {
+            heartsLost++;
+            const hearts = document.querySelectorAll('.heart');
+            hearts[heartsLost - 1].classList.add('lost'); // Change heart color to black
+
+            if (heartsLost >= 3) {
+                showLoserScreen(); // Show loser screen if all hearts are lost
+            }
+        }
+    }
+
+    function startQuiz() {
+        document.querySelector('.start-screen').style.display = 'none'; // Hide start screen
+        document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
+        const backgroundMusic = document.getElementById('background-music');
+        backgroundMusic.volume = 0.3; // Lower background music volume
+        backgroundMusic.play(); // Play background music
+        loadQuestion(); // Load the first question
+    }
+
+    function showLoserScreen() {
+        document.querySelector('.quiz-container').style.display = 'none'; // Hide quiz container
+        document.querySelector('.loser-screen').style.display = 'flex'; // Show loser screen
+        document.getElementById('background-music').pause(); // Stop background music
+    }
+
+    function retryQuiz() {
+        currentQuestion = 0;
+        heartsLost = 0;
+        const hearts = document.querySelectorAll('.heart');
+        hearts.forEach(heart => heart.classList.remove('lost')); // Reset hearts
+        document.querySelector('.loser-screen').style.display = 'none'; // Hide loser screen
+        const backgroundMusic = document.getElementById('background-music');
+        backgroundMusic.volume = 0.3; // Lower background music volume
+        backgroundMusic.play(); // Restart background music
+        startQuiz(); // Restart the quiz
+    }
+
+    document.querySelector('.start-button').onclick = startQuiz;
+    document.querySelector('.retry-button').onclick = retryQuiz;
+</script>
+
+</body>
+</html>
