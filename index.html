@@ -144,16 +144,6 @@
     <button class="retry-button" style="padding: 20px; font-size: 24px; background-color: #ff79c6; border: none; border-radius: 10px; cursor: pointer;">Retry</button>
 </div>
 
-<audio id="background-music" loop>
-    <source src="background-music.mp3" type="audio/mpeg">
-</audio>
-<audio id="correct-sound">
-    <source src="correct-sound.wav" type="audio/wav">
-</audio>
-<audio id="special-sound">
-    <source src="dayandnight.mp3" type="audio/mpeg">
-</audio>
-
 <script>
     const questions = [
         {
@@ -201,6 +191,21 @@
     let currentQuestion = 0;
     let heartsLost = 0;
 
+    const backgroundMusic = new Audio('background-music.mp3');
+    const correctSound = new Audio('correct-sound.wav');
+    const specialSound = new Audio('dayandnight.mp3');
+
+    background-music.loop = true; // Loop the background music
+    background-music.volume = 0.1; // Set background music volume to 10%
+    dayandnight.volume = 1;
+
+    function startQuiz() {
+        document.querySelector('.start-screen').style.display = 'none'; // Hide start screen
+        document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
+        backgroundMusic.play(); // Play background music
+        loadQuestion(); // Load the first question
+    }
+
     function loadQuestion() {
         const questionContainer = document.querySelector('.quiz-container');
         const questionText = document.querySelector('.question');
@@ -225,11 +230,10 @@
         const correctAnswers = questions[currentQuestion].correct;
         if (correctAnswers.includes(selectedAnswer)) {
             if (currentQuestion === 5) { // Check if it's question 6 (index 5)
-                const specialSound = document.getElementById('special-sound');
-                specialSound.volume = .9; // Set volume to full
+                specialSound.volume = 0.8; // Increase volume of the special sound
                 specialSound.play(); // Play special sound for question 6
             } else {
-                document.getElementById('correct-sound').play(); // Play standard correct sound
+                correctSound.play(); // Play standard correct sound
             }
             currentQuestion++; // Load next question
             loadQuestion();
@@ -244,36 +248,22 @@
         }
     }
 
-    function startQuiz() {
-        document.querySelector('.start-screen').style.display = 'none'; // Hide start screen
-        document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
-        const backgroundMusic = document.getElementById('background-music');
-        backgroundMusic.volume = 0.1; // Lower background music volume
-        backgroundMusic.play(); // Play background music
-        loadQuestion(); // Load the first question
-    }
-
     function showLoserScreen() {
-        document.querySelector('.quiz-container').style.display = 'none'; // Hide quiz container
-        document.querySelector('.loser-screen').style.display = 'flex'; // Show loser screen
-        document.getElementById('background-music').pause(); // Stop background music
-    }
-
-    function retryQuiz() {
-        currentQuestion = 0;
-        heartsLost = 0;
-        const hearts = document.querySelectorAll('.heart');
-        hearts.forEach(heart => heart.classList.remove('lost')); // Reset hearts
-        document.querySelector('.loser-screen').style.display = 'none'; // Hide loser screen
-        const backgroundMusic = document.getElementById('background-music');
-        backgroundMusic.volume = 0.1; // Lower background music volume
-        backgroundMusic.play(); // Restart background music
-        startQuiz(); // Restart the quiz
+        const quizContainer = document.querySelector('.quiz-container');
+        const loserScreen = document.querySelector('.loser-screen');
+        quizContainer.style.display = 'none'; // Hide quiz container
+        loserScreen.style.display = 'flex'; // Show loser screen
     }
 
     document.querySelector('.start-button').onclick = startQuiz;
-    document.querySelector('.retry-button').onclick = retryQuiz;
+    document.querySelector('.retry-button').onclick = () => {
+        heartsLost = 0; // Reset hearts lost
+        currentQuestion = 0; // Reset question index
+        document.querySelector('.loser-screen').style.display = 'none'; // Hide loser screen
+        document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
+        loadQuestion(); // Load the first question
+        backgroundMusic.play(); // Play background music
+    };
 </script>
-
 </body>
 </html>
