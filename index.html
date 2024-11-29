@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz</title>
+    
+    <!-- Google Font Link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Gochi+Hand&display=swap" rel="stylesheet">
+    
     <style>
         /* Reset styling for consistent appearance */
         * {
@@ -12,11 +18,6 @@
             padding: 0;
         }
 
-        <!-- Google Font Link -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Gochi+Hand&display=swap" rel="stylesheet">
-        
         /* Body styling */
         body {
             display: flex;
@@ -40,10 +41,10 @@
             color: #000;
             text-align: center;
             overflow: hidden;
-            display: none; /* Initially hidden */
             display: flex; /* Allows centering elements */
             justify-content: center; /* Centers content horizontally */
             align-items: center; /* Centers content vertically */
+            display: none; /* Initially hidden, will be shown after starting */
         
 
         }
@@ -83,10 +84,7 @@
         }
 
 
-        
-
-        
-
+    
         }
 
         /* Question number */
@@ -233,9 +231,7 @@
     
     <button class="start-button" style="padding: 20px; font-size: 24px; background-color: #0d4f83; border: none; border-radius: 10px; cursor: pointer;">Start</button>
     
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
+ 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Needle Animation</title>
@@ -267,14 +263,12 @@
             }
 
         </style>
-    </head>
-    <body>
+   
 
         <!-- The needle element -->
         <div class="needle"></div>
 
-    </body>
-    </html>
+  
 
 </div>
 
@@ -312,8 +306,8 @@
     
     <!-- Buttons Section -->
     <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
-        <img src="greenbutton.png" alt="Green Button" style="width: 100%; margin-bottom: 20px;">
-        <img src="redbutton.png" alt="Red Button" style="width: 100%;">
+        <img src="greenbutton.png" alt="Green Button" style="width: 200%; margin-bottom: 20px;">
+        <img src="redbutton.png" alt="Red Button" style="width: 200%;">
         <audio id="loser" src="loser.mp3"></audio>
     </div>
 
@@ -327,6 +321,12 @@
 
 
 <script>
+    
+    function redirectToWix() {
+        window.location.href = "https://amancini4444.wixsite.com/my-site-6";
+    }
+
+    
     const questions = [
         {
             text: "How old are you?",
@@ -409,7 +409,6 @@
     let heartsLost = 0;
 
     const backgroundMusic = new Audio('background-music.mp3');
-backgroundMusic.volume = 0.1;  // Set the volume to 20%
     const correctSound = new Audio('CorrectSound.mp3');
     const soundForQ14 = new Audio('pillsaregood.mp3'); // Load the sound for question 14
     const specialSound = new Audio('dayandnight.mp3');
@@ -439,9 +438,8 @@ backgroundMusic.volume = 0.1;  // Set the volume to 20%
                 button.onclick = () => checkAnswer(questions[currentQuestion].answers[index]);
             });
         } else {
-            questionText.textContent = "Quiz Finished!";
-            const buttons = questionContainer.querySelectorAll('.answer');
-            buttons.forEach(button => button.style.display = 'none');
+            // If all questions are answered, redirect to Wix
+                   redirectToWix();
         }
     }
 
@@ -500,6 +498,9 @@ backgroundMusic.volume = 0.1;  // Set the volume to 20%
         loadQuestion(); // Load the first question
         backgroundMusic.play(); // Play background music
     };
+    
+    
 </script>
 </body>
 </html>
+
