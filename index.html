@@ -4,14 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz</title>
-
+    
     <!-- Google Font Link -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Gochi+Hand&display=swap" rel="stylesheet">
-
+    
     <style>
-        /* General reset */
+        
+        /* Question number styling */
+        .question-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-family: 'Covered By Your Grace', cursive; /* Apply the chosen font */
+            color: #333; /* Adjust text color if needed */
+        }
+
+        /* Question text styling */
+        .question {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 60px 0 20px;
+            font-family: 'Gochi Hand', cursive; /* Apply the chosen font */
+            color: #222; /* Adjust text color if needed */
+        }
+
+        /* Answer button styling */
+        .answer {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 15px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #0d4f83;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'Covered By Your Grace', cursive; /* Apply the chosen font */
+            text-transform: capitalize; /* Optional: Adjust case */
+        }
+
+        /* Reset styling for consistent appearance */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -31,88 +71,176 @@
         /* Quiz container */
         .quiz-container {
             position: relative;
-            width: 100%; 
-            height: 100vh;
+            width: 100%; /* Take up full width of the screen */
+            height: 100vh; /* Full height of the viewport */
             padding: 20px;
             border-radius: 20px;
-            background-image: url('background.png');
+            background-image: url('background.png'); /* Path to your image */
             background-size: cover;
             background-position: center;
             color: #000;
             text-align: center;
             overflow: hidden;
-            display: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; /* Allows centering elements */
+            justify-content: center; /* Centers content horizontally */
+            align-items: center; /* Centers content vertically */
+            display: none; /* Initially hidden, will be shown after starting */
+        
+
         }
 
-        /* Start screen */
         .start-screen {
-            background-image: url('Home Page.png'); 
+            background-image: url('Home Page.png'); /* Your background image */
             background-size: cover;
             background-position: center;
-            height: 100vh;
+            height: 100vh; /* Full screen height */
             display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+            justify-content: center; /* Centers horizontally */
+            align-items: center; /* Centers vertically */
+            flex-direction: column; /* Stacks elements vertically */
             text-align: center;
             color: white;
-            padding-top: 50px;
+            padding-top: 50px; /* Optional: Adds space from top, adjust as needed */
             width: 100%;
+            
+            
+        
+
         }
 
         .start-button {
-            width: 90%; 
-            max-width: 400px; 
+            width: 90%; /* Set the width of the button to 90% of the parent container */
+            max-width: 400px; /* Optional: you can limit the maximum width */
             padding: 20px;
             font-size: 24px;
             background-color: #0d4f83;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: -360px; 
+            margin-top: -360px; /* Optional: Adds space from the top if needed */
             font-family: 'Brush Script MT', cursive;
-            text-transform: uppercase;
+            font-weight: bold; /* Make text bold */
+            text-transform: uppercase; /* Make text uppercase */
         }
 
-        /* Hearts container */
+
+    
+        }
+
+        /* Question number */
+        .question-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 18px;
+        }
+
+        /* Question text styling */
+        .question {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 60px 0 20px;
+        }
+
+        /* Answer button styling */
+        .answer {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 15px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #0d4f83;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        
+
+        /* Heart container */
+        
+        /* Initially hide the hearts container on the home and loser screens */
         .hearts {
             display: none;
         }
 
+        /* Heart container (only shows on quiz page) */
         .quiz-container .hearts {
-            position: fixed; 
-            bottom: 10px; 
-            right: 20px;
+            position: fixed; /* Fixed position to keep it in place while scrolling */
+            bottom: -10px; /* 20px from the bottom of the screen */
+            right: 20px; /* 20px from the right of the screen */
             display: flex;
             justify-content: center;
             align-items: center;
+            margin-top: 0;
+       
         }
 
+        /* Individual heart styling */
         .heart {
-            width: 90px;
+            width: 90px; /* Adjust size as needed */
             height: 90px;
             margin: 0 -20px;
-            animation: pulse 1s infinite;
+            animation: pulse 1s infinite; /* Pulse animation for all hearts */
+            
         }
-
-        .heart.lost {
-            content: url('heartblack.png'); 
-            animation: none;
-        }
-
+        
+        /* Pulse animation */
         @keyframes pulse {
             0% {
-                transform: scale(1);
+                transform: scale(1); /* Normal size */
+                /*box-shadow: 0 0 10px rgba(255, 0, 0, 0.7); /* Red glow */
             }
             50% {
+                transform: scale(1.2); /* Slightly larger */
+               /* box-shadow: 0 0 20px rgba(255, 0, 0, 1); /* Stronger glow */
+            }
+            100% {
+                transform: scale(1); /* Return to normal size */
+               /* box-shadow: 0 0 10px rgba(255, 0, 0, 0.7); /* Red glow */
+            }
+        }
+        
+        
+
+        /* Styling for a lost heart */
+        .heart.lost {
+            content: url('heartblack.png'); /* Change to black heart image when lost */
+            animation: none; /* Ensure no pulse effect */
+            
+        }
+
+        /* Loser screen */
+        .loser-screen {
+            display: none; /* Initially hidden */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        @keyframes stampAnimation {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            60% {
                 transform: scale(1.2);
+                opacity: 1;
             }
             100% {
                 transform: scale(1);
+                opacity: 1;
             }
+        }
+
+        .rejected-stamp {
+            animation: stampAnimation 0.8s ease-out forwards;
         }
 
         @keyframes stampAnimation {
@@ -130,36 +258,74 @@
             }
         }
 
-        /* Loser screen */
-        .loser-screen {
-            display: none; 
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            text-align: center;
-        }
-
         .loser-screen .container img {
             animation: stampAnimation 1.5s ease-in-out forwards;
         }
     </style>
 </head>
 
+
 <body>
 
 <div class="start-screen">
-    <button class="start-button">Start</button>
-    <div class="needle"></div>
+    
+    <button class="start-button" style="padding: 20px; font-size: 24px; background-color: #0d4f83; border: none; border-radius: 10px; cursor: pointer;">Start</button>
+    
+ 
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Needle Animation</title>
+        <style>
+            /* The needle */
+            .needle {
+                width: 6px;
+                height: 200px;
+                background-color: red;
+                position: absolute;
+                top: 50.5%;
+                right: 3%; /* Align the needle to the far right */
+                transform-origin: 100% 50%; /* Set the pivot point at the far right (right center of the needle) */
+                transform: translateY(-50%); /* Center the needle vertically */
+                animation: oscillate 4s infinite ease-in-out; /* Apply oscillation animation */
+            }
+
+            /* Oscillation animation from 0° to 180° */
+            @keyframes oscillate {
+                0% {
+                    transform: rotate(0deg) translateY(-50%);
+                }
+                50% {
+                    transform: rotate(-180deg) translateY(-50%);
+                }
+                100% {
+                    transform: rotate(0deg) translateY(-50%);
+                }
+            }
+
+        </style>
+   
+
+        <!-- The needle element -->
+        <div class="needle"></div>
+
+  
+
 </div>
 
 <div class="quiz-container">
+    <!-- Question number -->
     <div class="question-number">1/8</div>
+
+    <!-- Question text -->
     <div class="question"></div>
+
+    <!-- Answer buttons -->
     <button class="answer"></button>
     <button class="answer"></button>
     <button class="answer"></button>
     <button class="answer"></button>
 
+    <!-- Heart container with images -->
     <div class="hearts">
         <img src="heartred.png" class="heart" id="heart1">
         <img src="heartred.png" class="heart" id="heart2">
@@ -167,19 +333,40 @@
     </div>
 </div>
 
-<div class="loser-screen">
+<!-- Updated Loser Screen -->
+<div class="loser-screen" style="display: none;">
+    <!-- Background Image -->
     <img src="rejectedscreen.png" alt="Rejected Background" style="width: 100%; height: auto; position: absolute; top: 0; left: 0; z-index: 0;">
+    
+    <!-- Content Container -->
     <div class="container" style="position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; z-index: 1;">
+        <!-- Rejected Stamp -->
         <img src="rejectedstamp.png" alt="Rejected Stamp" style="width: 100%; margin-bottom: 500px;">
-        <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
-            <img src="greenbutton.png" alt="Green Button" style="width: 200%; margin-bottom: 20px;">
-            <img src="redbutton.png" alt="Red Button" style="width: 200%;">
-            <audio id="loser" src="loser.mp3"></audio>
+
+    
+    <!-- Buttons Section -->
+    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
+        <img src="greenbutton.png" alt="Green Button" style="width: 200%; margin-bottom: 20px;">
+        <img src="redbutton.png" alt="Red Button" style="width: 200%;">
+        <audio id="loser" src="loser.mp3"></audio>
+    </div>
+
+
         </div>
     </div>
 </div>
 
+   
+
+
+
 <script>
+    
+    function redirectToWix() {
+        window.location.href = "https://amancini4444.wixsite.com/my-site-6";
+    }
+
+    
     const questions = [
         {
             text: "How old are you?",
@@ -188,34 +375,171 @@
         },
         {
             text: "What is your sex?",
-            answers: ["Male", "Female", "Other", "Prefer not to say"],
+            answers: ["Male", "Female", "LGBTQRSTUV", "Other"],
             correct: ["Male", "Female"]
         },
-        // Other questions...
+        {
+            text: "How many days do you lift weights a week?",
+            answers: ["5-7", "3-4", "1-2", "What's a weight?"],
+            correct: ["5-7", "3-4", "1-2", "What's a weight?"]
+        },
+        {
+            text: "Do you do any weekly cardio?",
+            answers: ["Walking", "Cycling/Running", "Fitness Class", "I walk to the fridge"],
+            correct: ["Walking", "Cycling/Running", "Fitness Class", "I walk to the fridge"]
+        },
+        {
+            text: "What is your current diet?",
+            answers: ["50% pizza 50% regret", "Mostly healthy", "Uber Eats Baby!!!", "I have a perfect diet"],
+            correct: ["50% pizza 50% regret", "Mostly healthy", "Uber Eats Baby!!!", "I have a perfect diet"]
+        },
+        {
+            text: "How long will you quit alcohol for?",
+            answers: ["Until happy hour", "Couple two tree months", "Until I'm fit", "I'll try not to slip up much"],
+            correct: ["Couple two tree months", "Until I'm fit"]
+        },
+        {
+            text: "How do you feel when you wake up?",
+            answers: ["Energized!", "Like I need a coffee", "Low battery 🪫", "Anxious/Stressed"],
+            correct: ["Energized!", "Like I need a coffee", "Low battery 🪫", "Anxious/Stressed"]
+        },
+        {
+            text: "What type of job do you have?",
+            answers: ["Remote", "Labor Intensive", "In office", "No job/Student"],
+            correct: ["Remote", "Labor Intensive", "In office", "No job/Student"]
+        },
+        {
+            text: "",
+            answers: ["Lose weight", "Gain mass", "Be healthy", "Overall athlete"],
+            correct: ["Lose weight", "Gain mass", "Be healthy", "Overall athlete"]
+        },
+        {
+            text: "What has been preventing you from getting in shape?",
+            answers: ["Lazy", "I don't have time", "Junk food", "IDK WHAT I'M DOING!"],
+            correct: ["Lazy", "Junk food", "IDK WHAT I'M DOING!"]
+        },
+        {
+            text: "Relationship Status?",
+            answers: ["Single AF", "They love me not.😢", "In a relationship", "One word...Kids"],
+            correct: ["Single AF", "In a relationship", "One word...Kids"]
+        },
+        {
+            text: "How often are you willing to cook at home?",
+            answers: ["I can't cook", "Few times a week", "Almost every meal", "Does a microwave count?"],
+            correct: ["Few times a week", "Almost every meal", "Do ramen noodles count?"]
+        },
+        {
+            text: "Why are you pursuing fitness?",
+            answers: ["Revengeeee", "Gain mass/strength", "Health scare", "Weight loss"],
+            correct: ["Revengeeee", "Gain mass/strength", "Health scare", "Weight loss"]
+        },
+        {
+            text: "Do you currently take these supplements?",
+            answers: ["Protein powders", "Vitamins", "Both", "Nope"],
+            correct: ["Protein powders", "Vitamins", "Both", "Nope"]
+        },
+        {
+            text: "How much money do you spend on groceries/eating out a month?",
+            answers: ["<$500", "$500-$999", "$1000-$2000", ">$2000"],
+            correct: ["<$500", "$500-$999", "$1000-$2000", ">$2000"]
+        },
     ];
 
     let currentQuestion = 0;
     let heartsLost = 0;
 
-    function startQuiz() {
-        document.querySelector('.start-screen').style.display = 'none';
-        document.querySelector('.quiz-container').style.display = 'block';
-        loadQuestion();
-    }
+    const backgroundMusic = new Audio('background-music.mp3');
+    const correctSound = new Audio('CorrectSound.mp3');
+    const soundForQ14 = new Audio('pillsaregood.mp3'); // Load the sound for question 14
+    const specialSound = new Audio('dayandnight.mp3');
+    const wrongAnswerSound = new Audio('wronganswer.wav');
+    const NoTrySelection = new Audio('NoTry.mp3');
 
+    backgroundMusic.loop = true; // Loop the background music
+    backgroundMusic.volume = 0.1; // Set background music volume to 10%
+
+    function startQuiz() {
+        document.querySelector('.start-screen').style.display = 'none'; // Hide start screen
+        document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
+        backgroundMusic.play(); // Play background music
+        loadQuestion(); // Load the first question
+    }
     function loadQuestion() {
+        const questionContainer = document.querySelector('.quiz-container');
         const questionText = document.querySelector('.question');
         const questionNumber = document.querySelector('.question-number');
 
         if (currentQuestion < questions.length) {
-            questionNumber.textContent = `${currentQuestion + 1}/${questions.length}`;
+            questionNumber.textContent = ${currentQuestion + 1}/${questions.length}; // Fixing the template literal
             questionText.textContent = questions[currentQuestion].text;
+            const buttons = questionContainer.querySelectorAll('.answer');
+            buttons.forEach((button, index) => {
+                button.textContent = questions[currentQuestion].answers[index];
+                button.onclick = () => checkAnswer(questions[currentQuestion].answers[index]);
+            });
         } else {
-            // Redirect logic
+            // If all questions are answered, redirect to Wix
+                   redirectToWix();
         }
     }
 
+    document.querySelector('.start-button').onclick = startQuiz; // Ensure this is triggering the startQuiz function
+
+    
+
+
+    function checkAnswer(selectedAnswer) {
+        const correctAnswers = questions[currentQuestion].correct;
+        if (correctAnswers.includes(selectedAnswer)) {
+            if (currentQuestion === 13) { // Check if it's question 14 (index 13)
+                soundForQ14.volume = 0.8; // Increase volume of the sound for question 14
+                soundForQ14.play(); // Play specific sound for question 14
+            } else if (currentQuestion === 5) { // Check if it's question 6 (index 5)
+                specialSound.volume = 0.8; // Increase volume of the special sound
+                specialSound.play(); // Play special sound for question 6
+            } else {
+                correctSound.play(); // Play standard correct sound
+            }
+            currentQuestion++; // Load next question
+            loadQuestion();
+        } else {
+            heartsLost++;
+            const hearts = document.querySelectorAll('.heart');
+            hearts[heartsLost - 1].classList.add('lost'); // Change heart color to black
+            wrongAnswerSound.play(); // Play wrong answer sound
+
+            if (heartsLost >= 3) {
+                showLoserScreen(); // Show loser screen if all hearts are lost
+            }
+        }
+    }
+
+    function showLoserScreen() {
+        const quizContainer = document.querySelector('.quiz-container');
+        const loserScreen = document.querySelector('.loser-screen');
+        quizContainer.style.display = 'none'; // Hide quiz container
+        loserScreen.style.display = 'flex'; // Show loser screen
+
+        // Play the loser sound with increased volume
+            const loser = document.getElementById('loser');
+            loser.volume = 1; // Set volume to maximum (1 is 100%)
+            loser.play();
+    }
+
+
     document.querySelector('.start-button').onclick = startQuiz;
+    document.querySelector('.retry-button').onclick = () => {
+        heartsLost = 0; // Reset hearts lost
+        currentQuestion = 0; // Reset question index
+        const hearts = document.querySelectorAll('.heart');
+        hearts.forEach(heart => heart.classList.remove('lost')); // Reset hearts to red
+        document.querySelector('.loser-screen').style.display = 'none'; // Hide loser screen
+        document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
+        loadQuestion(); // Load the first question
+        backgroundMusic.play(); // Play background music
+    };
+    
+    
 </script>
 </body>
 </html>
