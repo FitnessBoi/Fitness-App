@@ -1,3 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+
+    <!-- Google Font Link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Gochi+Hand&display=swap" rel="stylesheet">
+
+    <style>
+        /* General reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Body styling */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Quiz container */
+        .quiz-container {
+            position: relative;
+            width: 100%; 
+            height: 100vh;
+            padding: 20px;
+            border-radius: 20px;
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            color: #000;
+            text-align: center;
+            overflow: hidden;
+            display: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Start screen */
+        .start-screen {
+            background-image: url('Home Page.png'); 
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            color: white;
+            padding-top: 50px;
+            width: 100%;
+        }
+
+        .start-button {
+            width: 90%; 
+            max-width: 400px; 
+            padding: 20px;
+            font-size: 24px;
+            background-color: #0d4f83;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: -360px; 
+            font-family: 'Brush Script MT', cursive;
+            text-transform: uppercase;
+        }
+
+        /* Hearts container */
+        .hearts {
+            display: none;
+        }
+
+        .quiz-container .hearts {
+            position: fixed; 
+            bottom: 10px; 
+            right: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .heart {
+            width: 90px;
+            height: 90px;
+            margin: 0 -20px;
+            animation: pulse 1s infinite;
+        }
+
+        .heart.lost {
+            content: url('heartblack.png'); 
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes stampAnimation {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Loser screen */
+        .loser-screen {
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .loser-screen .container img {
+            animation: stampAnimation 1.5s ease-in-out forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="start-screen">
+    <button class="start-button">Start</button>
+    <div class="needle"></div>
+</div>
+
+<div class="quiz-container">
+    <div class="question-number">1/8</div>
+    <div class="question"></div>
+    <button class="answer"></button>
+    <button class="answer"></button>
+    <button class="answer"></button>
+    <button class="answer"></button>
+
+    <div class="hearts">
+        <img src="heartred.png" class="heart" id="heart1">
+        <img src="heartred.png" class="heart" id="heart2">
+        <img src="heartred.png" class="heart" id="heart3">
+    </div>
+</div>
+
+<div class="loser-screen">
+    <img src="rejectedscreen.png" alt="Rejected Background" style="width: 100%; height: auto; position: absolute; top: 0; left: 0; z-index: 0;">
+    <div class="container" style="position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; z-index: 1;">
+        <img src="rejectedstamp.png" alt="Rejected Stamp" style="width: 100%; margin-bottom: 500px;">
+        <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
+            <img src="greenbutton.png" alt="Green Button" style="width: 200%; margin-bottom: 20px;">
+            <img src="redbutton.png" alt="Red Button" style="width: 200%;">
+            <audio id="loser" src="loser.mp3"></audio>
+        </div>
+    </div>
+</div>
+
 <script>
     const questions = [
         {
@@ -10,7 +191,7 @@
             answers: ["Male", "Female", "Other", "Prefer not to say"],
             correct: ["Male", "Female"]
         },
-        // Add more questions as needed
+        // Other questions...
     ];
 
     let currentQuestion = 0;
@@ -25,55 +206,16 @@
     function loadQuestion() {
         const questionText = document.querySelector('.question');
         const questionNumber = document.querySelector('.question-number');
-        const answerButtons = document.querySelectorAll('.answer');
 
         if (currentQuestion < questions.length) {
-            const current = questions[currentQuestion];
             questionNumber.textContent = `${currentQuestion + 1}/${questions.length}`;
-            questionText.textContent = current.text;
-
-            answerButtons.forEach((button, index) => {
-                button.textContent = current.answers[index];
-                button.onclick = () => handleAnswer(button.textContent);
-            });
+            questionText.textContent = questions[currentQuestion].text;
         } else {
-            endQuiz();
-        }
-    }
-
-    function handleAnswer(selectedAnswer) {
-        const current = questions[currentQuestion];
-
-        if (!current.correct.includes(selectedAnswer)) {
-            heartsLost++;
-            updateHearts();
-        }
-
-        currentQuestion++;
-        loadQuestion();
-    }
-
-    function updateHearts() {
-        const hearts = document.querySelectorAll('.heart');
-        if (heartsLost <= hearts.length) {
-            hearts[heartsLost - 1].classList.add('lost');
-        }
-
-        if (heartsLost >= hearts.length) {
-            endQuiz(true);
-        }
-    }
-
-    function endQuiz(isLoser = false) {
-        document.querySelector('.quiz-container').style.display = 'none';
-        if (isLoser) {
-            document.querySelector('.loser-screen').style.display = 'flex';
-            document.getElementById('loser').play();
-        } else {
-            // Handle winner or completion logic
-            alert("Quiz completed!");
+            // Redirect logic
         }
     }
 
     document.querySelector('.start-button').onclick = startQuiz;
 </script>
+</body>
+</html>
