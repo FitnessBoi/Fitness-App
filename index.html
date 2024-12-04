@@ -470,7 +470,7 @@
         const questionNumber = document.querySelector('.question-number');
 
         if (currentQuestion < questions.length) {
-            questionNumber.textContent = ${currentQuestion + 1}/${questions.length}; // Fixing the template literal
+            questionNumber.textContent = `${currentQuestion + 1}/${questions.length}`; // Fixing the template literal
             questionText.textContent = questions[currentQuestion].text;
             const buttons = questionContainer.querySelectorAll('.answer');
             buttons.forEach((button, index) => {
