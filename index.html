@@ -1,528 +1,1603 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz</title>
-    
-    <!-- Google Font Link -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Gochi+Hand&display=swap" rel="stylesheet">
-    
-<style>
-/* Reset styling for consistent appearance */
-* {
-box-sizing: border-box;
-margin: 0;
-padding: 0;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+    <link rel="manifest" href="manifest.json">
+    <title>Daily Routine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        <!-- Google Font Link -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Gochi+Hand&display=swap" rel="stylesheet">
-        
-/* Body styling */
-body {
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-background-color: #f0f0f0;
-font-family: Arial, sans-serif;
-}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 20px 15px;
+            padding-top: env(safe-area-inset-top, 20px);
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+            overflow-x: hidden;
+        }
 
-/* Quiz container */
-.quiz-container {
-position: relative;
-width: 100%; /* Take up full width of the screen */
-height: 100vh; /* Full height of the viewport */
-padding: 20px;
-border-radius: 20px;
-background-image: url('background.png'); /* Path to your image */
-background-size: cover;
-background-position: center;
-color: #000;
-text-align: center;
-overflow: hidden;
-            display: none; /* Initially hidden */
-display: flex; /* Allows centering elements */
-justify-content: center; /* Centers content horizontally */
-align-items: center; /* Centers content vertically */
-            display: none; /* Initially hidden, will be shown after starting */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
 
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-}
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #f5f5f7;
+            margin-bottom: 4px;
+        }
 
-.start-screen {
-background-image: url('Home Page.png'); /* Your background image */
-background-size: cover;
-background-position: center;
-height: 100vh; /* Full screen height */
-display: flex;
-justify-content: center; /* Centers horizontally */
-align-items: center; /* Centers vertically */
-flex-direction: column; /* Stacks elements vertically */
-text-align: center;
-color: white;
-padding-top: 50px; /* Optional: Adds space from top, adjust as needed */
-width: 100%;
+        .subtitle {
+            color: #6e6e73;
+            font-size: 0.85rem;
+        }
 
+        .current-day {
+            color: #0a84ff;
+            font-weight: 600;
+        }
 
+        .progress-bar {
+            background: #2c2c2e;
+            height: 4px;
+            border-radius: 2px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
 
+        .progress-fill {
+            background: linear-gradient(90deg, #30d158, #0a84ff);
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
 
-}
+        .progress-text {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6e6e73;
+            margin-bottom: 15px;
+        }
 
-.start-button {
-width: 90%; /* Set the width of the button to 90% of the parent container */
-max-width: 400px; /* Optional: you can limit the maximum width */
-padding: 20px;
-font-size: 24px;
-background-color: #0d4f83;
-border: none;
-border-radius: 10px;
-cursor: pointer;
-margin-top: -360px; /* Optional: Adds space from the top if needed */
-font-family: 'Brush Script MT', cursive;
-font-weight: bold; /* Make text bold */
-text-transform: uppercase; /* Make text uppercase */
-}
+        .days-nav {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 15px;
+            background: #1c1c1e;
+            padding: 8px 12px;
+            border-radius: 12px;
+        }
 
+        .day-btn {
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            color: #6e6e73;
+        }
 
-        
+        .day-btn:hover {
+            background: #2c2c2e;
+            color: #f5f5f7;
+        }
 
-        
+        .day-btn.active {
+            background: #0a84ff;
+            color: white;
+        }
 
-    
-}
+        .day-btn.today {
+            border: 2px solid #30d158;
+        }
 
-/* Question number */
-.question-number {
-position: absolute;
-top: 10px;
-left: 10px;
-background: rgba(255, 255, 255, 0.8);
-padding: 5px 10px;
-border-radius: 15px;
-font-size: 18px;
-}
+        .schedule {
+            background: #1c1c1e;
+            border-radius: 16px;
+            overflow: hidden;
+        }
 
-/* Question text styling */
-.question {
-font-size: 24px;
-font-weight: bold;
-margin: 60px 0 20px;
-}
+        .time-block {
+            display: flex;
+            padding: 12px 16px;
+            border-bottom: 1px solid #2c2c2e;
+            transition: transform 0.3s ease, opacity 0.3s ease, background 0.15s;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
 
-/* Answer button styling */
-.answer {
-display: block;
-width: 100%;
-margin: 10px 0;
-padding: 15px;
-font-size: 18px;
-color: #fff;
-background-color: #0d4f83;
-border: none;
-border-radius: 10px;
-cursor: pointer;
-transition: background-color 0.3s;
-}
+        .time-block:last-child {
+            border-bottom: none;
+        }
 
+        .time-block.hidden {
+            display: none;
+        }
 
+        .time-block.completed {
+            opacity: 0.4;
+        }
 
-/* Heart container */
+        .time-block.completed .event-title {
+            text-decoration: line-through;
+        }
 
-/* Initially hide the hearts container on the home and loser screens */
-.hearts {
-display: none;
-}
+        .time-block.swiping {
+            transition: none;
+        }
 
-/* Heart container (only shows on quiz page) */
-.quiz-container .hearts {
-position: fixed; /* Fixed position to keep it in place while scrolling */
-bottom: -10px; /* 20px from the bottom of the screen */
-right: 20px; /* 20px from the right of the screen */
-display: flex;
-justify-content: center;
-align-items: center;
-margin-top: 0;
+        .time-block.swipe-away {
+            transform: translateX(100%);
+            opacity: 0;
+        }
 
-}
+        .swipe-hint {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #30d158;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
 
-/* Individual heart styling */
-.heart {
-width: 90px; /* Adjust size as needed */
-height: 90px;
-margin: 0 -20px;
-animation: pulse 1s infinite; /* Pulse animation for all hearts */
+        .time-block.swiping .swipe-hint {
+            opacity: 1;
+        }
 
-}
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #3a3a3c;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            align-self: center;
+        }
 
-/* Pulse animation */
-@keyframes pulse {
-0% {
-transform: scale(1); /* Normal size */
-/*box-shadow: 0 0 10px rgba(255, 0, 0, 0.7); /* Red glow */
-}
-50% {
-transform: scale(1.2); /* Slightly larger */
-/* box-shadow: 0 0 20px rgba(255, 0, 0, 1); /* Stronger glow */
-}
-100% {
-transform: scale(1); /* Return to normal size */
-/* box-shadow: 0 0 10px rgba(255, 0, 0, 0.7); /* Red glow */
-}
-}
+        .time-block.completed .checkbox {
+            background: #30d158;
+            border-color: #30d158;
+        }
 
+        .checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            opacity: 0;
+        }
 
+        .time-block.completed .checkbox::after {
+            opacity: 1;
+        }
 
-/* Styling for a lost heart */
-.heart.lost {
-content: url('heartblack.png'); /* Change to black heart image when lost */
-animation: none; /* Ensure no pulse effect */
+        .time-col {
+            width: 65px;
+            flex-shrink: 0;
+            padding-top: 2px;
+        }
 
-}
+        .time-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #8e8e93;
+        }
 
-/* Loser screen */
-.loser-screen {
-display: none; /* Initially hidden */
-justify-content: center;
-align-items: center;
-flex-direction: column;
-text-align: center;
-}
+        .event-col {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
 
-@keyframes stampAnimation {
-0% {
-transform: scale(0);
-opacity: 0;
-}
-60% {
-transform: scale(1.2);
-opacity: 1;
-}
-100% {
-transform: scale(1);
-opacity: 1;
-}
-}
+        .event-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
 
-.rejected-stamp {
-animation: stampAnimation 0.8s ease-out forwards;
-}
+        .event-details {
+            flex: 1;
+            min-width: 0;
+        }
 
-@keyframes stampAnimation {
-0% {
-transform: scale(0);
-opacity: 0;
-}
-50% {
-transform: scale(1.1);
-opacity: 1;
-}
-100% {
-transform: scale(1);
-opacity: 1;
-}
-}
+        .event-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #f5f5f7;
+            line-height: 1.3;
+        }
 
-.loser-screen .container img {
-animation: stampAnimation 1.5s ease-in-out forwards;
-}
-</style>
+        .event-note {
+            font-size: 0.7rem;
+            color: #8e8e93;
+            margin-top: 2px;
+        }
+
+        .event-badge {
+            font-size: 0.65rem;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-weight: 500;
+            margin-left: auto;
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        /* Category Colors */
+        .cat-wake { background: linear-gradient(135deg, #2d1f24 0%, #1c1c1e 100%); }
+        .cat-wake .event-icon { background: #3a2a30; }
+
+        .cat-fitness { background: linear-gradient(135deg, #1a2d22 0%, #1c1c1e 100%); }
+        .cat-fitness .event-icon { background: #1a3a2a; }
+
+        .cat-routine { background: linear-gradient(135deg, #1a222d 0%, #1c1c1e 100%); }
+        .cat-routine .event-icon { background: #1a2a3a; }
+
+        .cat-meals { background: linear-gradient(135deg, #2d2419 0%, #1c1c1e 100%); }
+        .cat-meals .event-icon { background: #3a2a1a; }
+
+        .cat-work { background: linear-gradient(135deg, #241a2d 0%, #1c1c1e 100%); }
+        .cat-work .event-icon { background: #2a1a3a; }
+
+        .cat-sauna { background: linear-gradient(135deg, #2d1a1a 0%, #1c1c1e 100%); }
+        .cat-sauna .event-icon { background: #3a1a1a; }
+
+        .cat-winddown { background: linear-gradient(135deg, #1a1a24 0%, #1c1c1e 100%); }
+        .cat-winddown .event-icon { background: #1a1a2a; }
+
+        .cat-sleep { background: linear-gradient(135deg, #222222 0%, #1c1c1e 100%); }
+        .cat-sleep .event-icon { background: #2a2a2a; }
+
+        .badge-sunrise { background: #3a2a1a; color: #ff9f0a; }
+        .badge-sunset { background: #3a1a2a; color: #ff6b6b; }
+        .badge-call { background: #0a2a4a; color: #64d2ff; }
+
+        .section-label {
+            padding: 10px 16px 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #8e8e93;
+            background: #141414;
+        }
+
+        .dur-5 { min-height: 29px; }
+        .dur-10 { min-height: 34px; }
+        .dur-12 { min-height: 36px; }
+        .dur-15 { min-height: 39px; }
+        .dur-18 { min-height: 42px; }
+        .dur-20 { min-height: 44px; }
+        .dur-30 { min-height: 54px; }
+        .dur-45 { min-height: 69px; }
+        .dur-60 { min-height: 84px; }
+        .dur-90 { min-height: 114px; }
+        .dur-120 { min-height: 144px; }
+
+        .todo-section {
+            margin-top: 20px;
+            background: #1c1c1e;
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .todo-section h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #f5f5f7;
+            margin-bottom: 10px;
+        }
+
+        .todo-section ul {
+            list-style: none;
+        }
+
+        .todo-section li {
+            font-size: 0.8rem;
+            color: #a1a1a6;
+            padding: 8px 0;
+            border-bottom: 1px solid #2c2c2e;
+        }
+
+        .todo-section li:last-child {
+            border-bottom: none;
+        }
+
+        .reset-btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            background: #2c2c2e;
+            border: none;
+            border-radius: 12px;
+            color: #ff453a;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .install-prompt {
+            display: none;
+            background: linear-gradient(135deg, #1a3a2a 0%, #1c1c1e 100%);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 15px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .install-prompt.show {
+            display: flex;
+        }
+
+        .install-prompt p {
+            flex: 1;
+            color: #f5f5f7;
+            font-size: 0.8rem;
+        }
+
+        .install-btn {
+            background: #30d158;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .dismiss-btn {
+            background: none;
+            border: none;
+            color: #6e6e73;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        @media (max-width: 380px) {
+            .time-col { width: 55px; }
+            .event-icon { width: 30px; height: 30px; font-size: 0.9rem; }
+            .event-title { font-size: 0.85rem; }
+            .day-btn { width: 34px; height: 34px; font-size: 0.75rem; }
+        }
+    </style>
 </head>
-
-
 <body>
+    <div class="container">
+        <header>
+            <h1>Daily Routine</h1>
+            <p class="subtitle">Fort Lauderdale • <span class="current-day"></span></p>
+        </header>
 
-<div class="start-screen">
+        <div class="install-prompt" id="installPrompt">
+            <p>Add to home screen for the best experience</p>
+            <button class="install-btn" id="installBtn">Install</button>
+            <button class="dismiss-btn" id="dismissBtn">×</button>
+        </div>
 
-<button class="start-button" style="padding: 20px; font-size: 24px; background-color: #0d4f83; border: none; border-radius: 10px; cursor: pointer;">Start</button>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-text"><span id="completedCount">0</span> of <span id="totalCount">0</span> tasks completed</p>
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
- 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Needle Animation</title>
-<style>
-/* The needle */
-.needle {
-width: 6px;
-height: 200px;
-background-color: red;
-position: absolute;
-top: 50.5%;
-right: 3%; /* Align the needle to the far right */
-transform-origin: 100% 50%; /* Set the pivot point at the far right (right center of the needle) */
-transform: translateY(-50%); /* Center the needle vertically */
-animation: oscillate 4s infinite ease-in-out; /* Apply oscillation animation */
-}
+        <nav class="days-nav">
+            <button class="day-btn" data-day="0">M</button>
+            <button class="day-btn" data-day="1">T</button>
+            <button class="day-btn" data-day="2">W</button>
+            <button class="day-btn" data-day="3">T</button>
+            <button class="day-btn" data-day="4">F</button>
+            <button class="day-btn" data-day="5">S</button>
+            <button class="day-btn" data-day="6">S</button>
+        </nav>
 
-/* Oscillation animation from 0° to 180° */
-@keyframes oscillate {
-0% {
-transform: rotate(0deg) translateY(-50%);
-}
-50% {
-transform: rotate(-180deg) translateY(-50%);
-}
-100% {
-transform: rotate(0deg) translateY(-50%);
-}
-}
+        <div class="schedule" id="schedule">
+            <div class="section-label">Morning</div>
 
-</style>
-    </head>
-    <body>
-   
+            <!-- Wake up - Mon-Sat -->
+            <div class="time-block cat-wake dur-15" data-days="0,1,2,3,4,5" data-id="wake-weekday">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">⚖️</div>
+                    <div class="event-details">
+                        <div class="event-title">Wake up</div>
+                        <div class="event-note">Weigh in, 20oz water, rinse face, brush teeth</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-<!-- The needle element -->
-<div class="needle"></div>
+            <!-- Wake up - Sunday -->
+            <div class="time-block cat-wake dur-15" data-days="6" data-id="wake-sunday">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:00 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">⚖️</div>
+                    <div class="event-details">
+                        <div class="event-title">Wake up</div>
+                        <div class="event-note">Weigh in, water, rinse face, brush teeth</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-    </body>
-    </html>
-  
+            <!-- Yogurt - Mon-Sat -->
+            <div class="time-block cat-meals dur-10" data-days="0,1,2,3,4,5" data-id="yogurt">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:45 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🥛</div>
+                    <div class="event-details">
+                        <div class="event-title">Yogurt</div>
+                        <div class="event-note">Pre-workout</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-</div>
+            <!-- Stretch - Mon-Sat -->
+            <div class="time-block cat-fitness dur-20" data-days="0,1,2,3,4,5" data-id="stretch">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:55 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🧘</div>
+                    <div class="event-details">
+                        <div class="event-title">Stretch + calf therapy</div>
+                        <div class="event-note">20 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-<div class="quiz-container">
-<!-- Question number -->
-<div class="question-number">1/8</div>
+            <!-- Sunday Breakfast -->
+            <div class="time-block cat-meals dur-45" data-days="6" data-id="breakfast-sunday">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:15 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍳</div>
+                    <div class="event-details">
+                        <div class="event-title">Breakfast</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-<!-- Question text -->
-<div class="question"></div>
+            <!-- Sunday Shower -->
+            <div class="time-block cat-routine dur-30" data-days="6" data-id="shower-sunday">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:00 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚿</div>
+                    <div class="event-details">
+                        <div class="event-title">Shower, get ready</div>
+                        <div class="event-note">Church prep</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-<!-- Answer buttons -->
-<button class="answer"></button>
-<button class="answer"></button>
-<button class="answer"></button>
-<button class="answer"></button>
+            <!-- Monday - Bike to beach -->
+            <div class="time-block cat-fitness dur-18" data-days="0" data-id="bike-beach-mon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:15 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike to beach</div>
+                        <div class="event-note">~18 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-<!-- Heart container with images -->
-<div class="hearts">
-<img src="heartred.png" class="heart" id="heart1">
-<img src="heartred.png" class="heart" id="heart2">
-<img src="heartred.png" class="heart" id="heart3">
-</div>
-</div>
+            <!-- Monday - Beach abs -->
+            <div class="time-block cat-fitness dur-60" data-days="0" data-id="beach-abs">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🏖️</div>
+                    <div class="event-details">
+                        <div class="event-title">Beach abs workout</div>
+                        <div class="event-note">MC Fitness @ 5:15pm today</div>
+                    </div>
+                    <span class="event-badge badge-sunrise">🌅 Sunrise</span>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-<!-- Updated Loser Screen -->
-<div class="loser-screen" style="display: none;">
-<!-- Background Image -->
-<img src="rejectedscreen.png" alt="Rejected Background" style="width: 100%; height: auto; position: absolute; top: 0; left: 0; z-index: 0;">
+            <!-- Tu/Th - AI Classes -->
+            <div class="time-block cat-work dur-60" data-days="1,3" data-id="ai-classes">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:15 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🤖</div>
+                    <div class="event-details">
+                        <div class="event-title">AI Classes</div>
+                        <div class="event-note">1 hour learning block</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-<!-- Content Container -->
-<div class="container" style="position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; z-index: 1;">
-<!-- Rejected Stamp -->
-<img src="rejectedstamp.png" alt="Rejected Stamp" style="width: 100%; margin-bottom: 500px;">
+            <!-- Tu/Th - Bike to gym -->
+            <div class="time-block cat-fitness dur-12" data-days="1,3" data-id="bike-gym-tuth">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:15 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike to Amped Fitness</div>
+                        <div class="event-note">~12 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- W - Bike to gym -->
+            <div class="time-block cat-fitness dur-12" data-days="2" data-id="bike-gym-wed">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:15 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike to Amped Fitness</div>
+                        <div class="event-note">~12 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-<!-- Buttons Section -->
-<div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
-        <img src="greenbutton.png" alt="Green Button" style="width: 100%; margin-bottom: 20px;">
-        <img src="redbutton.png" alt="Red Button" style="width: 100%;">
-        <img src="greenbutton.png" alt="Green Button" style="width: 200%; margin-bottom: 20px;">
-        <img src="redbutton.png" alt="Red Button" style="width: 200%;">
-<audio id="loser" src="loser.mp3"></audio>
-</div>
+            <!-- Friday - Bike to beach -->
+            <div class="time-block cat-fitness dur-18" data-days="4" data-id="bike-beach-fri">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:15 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike to beach</div>
+                        <div class="event-note">~18 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- Tu/Th - Gym -->
+            <div class="time-block cat-fitness dur-60" data-days="1,3" data-id="gym-tuth">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🏋️</div>
+                    <div class="event-details">
+                        <div class="event-title">Gym — Weights</div>
+                        <div class="event-note">After AI class</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-</div>
-</div>
-</div>
+            <!-- W - Gym -->
+            <div class="time-block cat-fitness dur-60" data-days="2" data-id="gym-wed">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🏋️</div>
+                    <div class="event-details">
+                        <div class="event-title">Gym — Weights</div>
+                        <div class="event-note">1 hour</div>
+                    </div>
+                    <span class="event-badge badge-sunrise">🌅 Sunrise</span>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- Friday - Morning run -->
+            <div class="time-block cat-fitness dur-60" data-days="4" data-id="run-fri">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🏃</div>
+                    <div class="event-details">
+                        <div class="event-title">Morning run</div>
+                        <div class="event-note">Beach run, gym at 5pm</div>
+                    </div>
+                    <span class="event-badge badge-sunrise">🌅 Sunrise</span>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- Saturday - Gym in building -->
+            <div class="time-block cat-fitness dur-60" data-days="5" data-id="gym-sat">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:15 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🏋️</div>
+                    <div class="event-details">
+                        <div class="event-title">Gym in building</div>
+                        <div class="event-note">Home gym, 1 hour</div>
+                    </div>
+                    <span class="event-badge badge-sunrise">🌅 Sunrise</span>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- Monday - Protein bar -->
+            <div class="time-block cat-meals dur-10" data-days="0" data-id="protein-mon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍌</div>
+                    <div class="event-details">
+                        <div class="event-title">Protein bar + banana</div>
+                        <div class="event-note">Post-workout</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- Tu/Th - Protein bar -->
+            <div class="time-block cat-meals dur-10" data-days="1,3" data-id="protein-tuth">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍌</div>
+                    <div class="event-details">
+                        <div class="event-title">Protein bar + banana</div>
+                        <div class="event-note">Post-workout</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-<script>
-    
-    function redirectToWix() {
-        window.location.href = "https://amancini4444.wixsite.com/my-site-6";
-    }
+            <!-- W - Protein bar -->
+            <div class="time-block cat-meals dur-10" data-days="2" data-id="protein-wed">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍌</div>
+                    <div class="event-details">
+                        <div class="event-title">Protein bar + banana</div>
+                        <div class="event-note">Post-workout</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-    
-const questions = [
-{
-text: "How old are you?",
-answers: ["16-24", "25-34", "35-49", "55+"],
-correct: ["16-24", "25-34", "35-49", "55+"]
-},
-{
-text: "What is your sex?",
-answers: ["Male", "Female", "LGBTQRSTUV", "Other"],
-correct: ["Male", "Female"]
-},
-{
-text: "How many days do you lift weights a week?",
-answers: ["5-7", "3-4", "1-2", "What's a weight?"],
-correct: ["5-7", "3-4", "1-2", "What's a weight?"]
-},
-{
-text: "Do you do any weekly cardio?",
-answers: ["Walking", "Cycling/Running", "Fitness Class", "I walk to the fridge"],
-correct: ["Walking", "Cycling/Running", "Fitness Class", "I walk to the fridge"]
-},
-{
-text: "What is your current diet?",
-answers: ["50% pizza 50% regret", "Mostly healthy", "Uber Eats Baby!!!", "I have a perfect diet"],
-correct: ["50% pizza 50% regret", "Mostly healthy", "Uber Eats Baby!!!", "I have a perfect diet"]
-},
-{
-text: "How long will you quit alcohol for?",
-answers: ["Until happy hour", "Couple two tree months", "Until I'm fit", "I'll try not to slip up much"],
-correct: ["Couple two tree months", "Until I'm fit"]
-},
-{
-text: "How do you feel when you wake up?",
-answers: ["Energized!", "Like I need a coffee", "Low battery 🪫", "Anxious/Stressed"],
-correct: ["Energized!", "Like I need a coffee", "Low battery 🪫", "Anxious/Stressed"]
-},
-{
-text: "What type of job do you have?",
-answers: ["Remote", "Labor Intensive", "In office", "No job/Student"],
-correct: ["Remote", "Labor Intensive", "In office", "No job/Student"]
-},
-{
-text: "",
-answers: ["Lose weight", "Gain mass", "Be healthy", "Overall athlete"],
-correct: ["Lose weight", "Gain mass", "Be healthy", "Overall athlete"]
-},
-{
-text: "What has been preventing you from getting in shape?",
-answers: ["Lazy", "I don't have time", "Junk food", "IDK WHAT I'M DOING!"],
-correct: ["Lazy", "Junk food", "IDK WHAT I'M DOING!"]
-},
-{
-text: "Relationship Status?",
-answers: ["Single AF", "They love me not.😢", "In a relationship", "One word...Kids"],
-correct: ["Single AF", "In a relationship", "One word...Kids"]
-},
-{
-text: "How often are you willing to cook at home?",
-answers: ["I can't cook", "Few times a week", "Almost every meal", "Does a microwave count?"],
-correct: ["Few times a week", "Almost every meal", "Do ramen noodles count?"]
-},
-{
-text: "Why are you pursuing fitness?",
-answers: ["Revengeeee", "Gain mass/strength", "Health scare", "Weight loss"],
-correct: ["Revengeeee", "Gain mass/strength", "Health scare", "Weight loss"]
-},
-{
-text: "Do you currently take these supplements?",
-answers: ["Protein powders", "Vitamins", "Both", "Nope"],
-correct: ["Protein powders", "Vitamins", "Both", "Nope"]
-},
-{
-text: "How much money do you spend on groceries/eating out a month?",
-answers: ["<$500", "$500-$999", "$1000-$2000", ">$2000"],
-correct: ["<$500", "$500-$999", "$1000-$2000", ">$2000"]
-},
-];
+            <!-- Friday - Protein bar -->
+            <div class="time-block cat-meals dur-10" data-days="4" data-id="protein-fri">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍌</div>
+                    <div class="event-details">
+                        <div class="event-title">Protein bar + banana</div>
+                        <div class="event-note">Post-run</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-let currentQuestion = 0;
-let heartsLost = 0;
+            <!-- Monday - Bike home -->
+            <div class="time-block cat-fitness dur-18" data-days="0" data-id="bike-home-mon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:40 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike home from beach</div>
+                        <div class="event-note">~18 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-const backgroundMusic = new Audio('background-music.mp3');
-backgroundMusic.volume = 0.1;  // Set the volume to 20%
-const correctSound = new Audio('CorrectSound.mp3');
-const soundForQ14 = new Audio('pillsaregood.mp3'); // Load the sound for question 14
-const specialSound = new Audio('dayandnight.mp3');
-const wrongAnswerSound = new Audio('wronganswer.wav');
-const NoTrySelection = new Audio('NoTry.mp3');
+            <!-- Tu/Th - Beach tan & swim -->
+            <div class="time-block cat-fitness dur-30" data-days="1,3" data-id="beach-tuth">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:40 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🏖️</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike to beach, tan & swim</div>
+                        <div class="event-note">~30 min at beach</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-backgroundMusic.loop = true; // Loop the background music
-backgroundMusic.volume = 0.1; // Set background music volume to 10%
+            <!-- Tu/Th - Bike home from beach -->
+            <div class="time-block cat-fitness dur-18" data-days="1,3" data-id="bike-home-tuth">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">10:10 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike home from beach</div>
+                        <div class="event-note">~18 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-function startQuiz() {
-document.querySelector('.start-screen').style.display = 'none'; // Hide start screen
-document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
-backgroundMusic.play(); // Play background music
-loadQuestion(); // Load the first question
-}
-function loadQuestion() {
-const questionContainer = document.querySelector('.quiz-container');
-const questionText = document.querySelector('.question');
-const questionNumber = document.querySelector('.question-number');
+            <!-- W - Bike home -->
+            <div class="time-block cat-fitness dur-12" data-days="2" data-id="bike-home-wed">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:40 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike home</div>
+                        <div class="event-note">~12 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-if (currentQuestion < questions.length) {
-questionNumber.textContent = `${currentQuestion + 1}/${questions.length}`; // Fixing the template literal
-questionText.textContent = questions[currentQuestion].text;
-const buttons = questionContainer.querySelectorAll('.answer');
-buttons.forEach((button, index) => {
-button.textContent = questions[currentQuestion].answers[index];
-button.onclick = () => checkAnswer(questions[currentQuestion].answers[index]);
-});
-} else {
-            questionText.textContent = "Quiz Finished!";
-            const buttons = questionContainer.querySelectorAll('.answer');
-            buttons.forEach(button => button.style.display = 'none');
-            // If all questions are answered, redirect to Wix
-                   redirectToWix();
-}
-}
+            <!-- Friday - Bike home from beach -->
+            <div class="time-block cat-fitness dur-18" data-days="4" data-id="bike-home-fri">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:40 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike home from beach</div>
+                        <div class="event-note">~18 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-document.querySelector('.start-button').onclick = startQuiz; // Ensure this is triggering the startQuiz function
+            <!-- M/W/F - Shower -->
+            <div class="time-block cat-routine dur-45" data-days="0,2,4" data-id="shower-mwf">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:55 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚿</div>
+                    <div class="event-details">
+                        <div class="event-title">Shower, facial routine</div>
+                        <div class="event-note">45 min</div>
+                    </div>
+                    <span class="event-badge badge-call">📞 9am call</span>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- Saturday - Shower -->
+            <div class="time-block cat-routine dur-45" data-days="5" data-id="shower-sat">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:25 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚿</div>
+                    <div class="event-details">
+                        <div class="event-title">Shower, facial routine</div>
+                        <div class="event-note">45 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- Sunday - Leave for church -->
+            <div class="time-block cat-winddown dur-30" data-days="6" data-id="leave-church">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:30 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚗</div>
+                    <div class="event-details">
+                        <div class="event-title">Leave for church</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- Sunday - Church -->
+            <div class="time-block cat-winddown dur-60" data-days="6" data-id="church">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">10:00 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">⛪</div>
+                    <div class="event-details">
+                        <div class="event-title">Church</div>
+                        <div class="event-note">1 hour</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-function checkAnswer(selectedAnswer) {
-const correctAnswers = questions[currentQuestion].correct;
-if (correctAnswers.includes(selectedAnswer)) {
-if (currentQuestion === 13) { // Check if it's question 14 (index 13)
-soundForQ14.volume = 0.8; // Increase volume of the sound for question 14
-soundForQ14.play(); // Play specific sound for question 14
-} else if (currentQuestion === 5) { // Check if it's question 6 (index 5)
-specialSound.volume = 0.8; // Increase volume of the special sound
-specialSound.play(); // Play special sound for question 6
-} else {
-correctSound.play(); // Play standard correct sound
-}
-currentQuestion++; // Load next question
-loadQuestion();
-} else {
-heartsLost++;
-const hearts = document.querySelectorAll('.heart');
-hearts[heartsLost - 1].classList.add('lost'); // Change heart color to black
-wrongAnswerSound.play(); // Play wrong answer sound
+            <!-- Tu/Th - Shower -->
+            <div class="time-block cat-routine dur-45" data-days="1,3" data-id="shower-tuth">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">10:25 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚿</div>
+                    <div class="event-details">
+                        <div class="event-title">Shower, facial routine</div>
+                        <div class="event-note">45 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-if (heartsLost >= 3) {
-showLoserScreen(); // Show loser screen if all hearts are lost
-}
-}
-}
+            <!-- M/W/F - Breakfast -->
+            <div class="time-block cat-meals dur-45" data-days="0,2,4" data-id="breakfast-mwf">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:40 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍳</div>
+                    <div class="event-details">
+                        <div class="event-title">Breakfast + prep lunch</div>
+                        <div class="event-note">45 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-function showLoserScreen() {
-const quizContainer = document.querySelector('.quiz-container');
-const loserScreen = document.querySelector('.loser-screen');
-quizContainer.style.display = 'none'; // Hide quiz container
-loserScreen.style.display = 'flex'; // Show loser screen
+            <!-- Saturday - Breakfast -->
+            <div class="time-block cat-meals dur-60" data-days="5" data-id="breakfast-sat">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:10 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍳</div>
+                    <div class="event-details">
+                        <div class="event-title">Breakfast + prep lunch</div>
+                        <div class="event-note">1 hour</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-// Play the loser sound with increased volume
-const loser = document.getElementById('loser');
-loser.volume = 1; // Set volume to maximum (1 is 100%)
-loser.play();
-}
+            <!-- Saturday - Bike to beach -->
+            <div class="time-block cat-fitness dur-18" data-days="5" data-id="bike-beach-sat">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">10:10 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike to beach</div>
+                        <div class="event-note">~18 min, eat protein bar + banana</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
+            <!-- Saturday - Beach time -->
+            <div class="time-block cat-fitness dur-60" data-days="5" data-id="beach-sat">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">10:25 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🏖️</div>
+                    <div class="event-details">
+                        <div class="event-title">Beach time</div>
+                        <div class="event-note">1 hour</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
 
-document.querySelector('.start-button').onclick = startQuiz;
-document.querySelector('.retry-button').onclick = () => {
-heartsLost = 0; // Reset hearts lost
-currentQuestion = 0; // Reset question index
-const hearts = document.querySelectorAll('.heart');
-hearts.forEach(heart => heart.classList.remove('lost')); // Reset hearts to red
-document.querySelector('.loser-screen').style.display = 'none'; // Hide loser screen
-document.querySelector('.quiz-container').style.display = 'block'; // Show quiz container
-loadQuestion(); // Load the first question
-backgroundMusic.play(); // Play background music
-};
-    
-    
-</script>
+            <!-- Tu/Th - Breakfast -->
+            <div class="time-block cat-meals dur-45" data-days="1,3" data-id="breakfast-tuth">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">11:10 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍳</div>
+                    <div class="event-details">
+                        <div class="event-title">Breakfast + prep lunch</div>
+                        <div class="event-note">45 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <div class="section-label">Work</div>
+
+            <!-- M/W/F - BioCage morning -->
+            <div class="time-block cat-work dur-120" data-days="0,2,4" data-id="work-morning-mwf">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">10:25 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">💼</div>
+                    <div class="event-details">
+                        <div class="event-title">BioCage Work</div>
+                        <div class="event-note">Deep focus block</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Saturday - Bike home from beach -->
+            <div class="time-block cat-fitness dur-18" data-days="5" data-id="bike-home-sat">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">11:25 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike home from beach</div>
+                        <div class="event-note">~18 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Sunday - BioCage -->
+            <div class="time-block cat-work dur-45" data-days="6" data-id="work-sun">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">11:45 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">💼</div>
+                    <div class="event-details">
+                        <div class="event-title">BioCage Work</div>
+                        <div class="event-note">Deep focus block</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Tu/Th - BioCage -->
+            <div class="time-block cat-work dur-30" data-days="1,3" data-id="work-morning-tuth">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">11:55 AM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">💼</div>
+                    <div class="event-details">
+                        <div class="event-title">BioCage Work</div>
+                        <div class="event-note">Deep focus block</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Lunch - All days -->
+            <div class="time-block cat-meals dur-30" data-days="0,1,2,3,4,5,6" data-id="lunch">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">12:30 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🥗</div>
+                    <div class="event-details">
+                        <div class="event-title">Lunch</div>
+                        <div class="event-note">30 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Afternoon work -->
+            <div class="time-block cat-work dur-120" data-days="0,1,2,3,4,5,6" data-id="work-afternoon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">1:00 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">💼</div>
+                    <div class="event-details">
+                        <div class="event-title">BioCage Work</div>
+                        <div class="event-note">Afternoon block until 6pm</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Mon/Fri - Early Dinner -->
+            <div class="time-block cat-meals dur-45" data-days="0,4" data-id="dinner-early">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">4:00 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍽️</div>
+                    <div class="event-details">
+                        <div class="event-title">Dinner</div>
+                        <div class="event-note">45 min, before evening gym</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Tu/W/Th/Sat/Sun - Dinner -->
+            <div class="time-block cat-meals dur-45" data-days="1,2,3,5,6" data-id="dinner">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:00 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🍽️</div>
+                    <div class="event-details">
+                        <div class="event-title">Dinner</div>
+                        <div class="event-note">45 min</div>
+                    </div>
+                    <span class="event-badge badge-sunset">🌅 Sunset 5:50</span>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <div class="section-label">Evening</div>
+
+            <!-- Monday - Bike to MC Fitness -->
+            <div class="time-block cat-fitness dur-15" data-days="0" data-id="bike-mc">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">5:00 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike to MC Fitness</div>
+                        <div class="event-note">~15 min</div>
+                    </div>
+                    <span class="event-badge badge-sunset">🌅 Sunset 5:50</span>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Monday - MC Fitness -->
+            <div class="time-block cat-fitness dur-60" data-days="0" data-id="mc-fitness">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">5:15 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">💪</div>
+                    <div class="event-details">
+                        <div class="event-title">MC Fitness</div>
+                        <div class="event-note">Monday evening class</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Monday - Bike home from MC -->
+            <div class="time-block cat-fitness dur-15" data-days="0" data-id="bike-home-mc">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:30 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike home</div>
+                        <div class="event-note">~15 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Monday - Protein shake -->
+            <div class="time-block cat-meals dur-10" data-days="0" data-id="shake-mon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:45 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🥤</div>
+                    <div class="event-details">
+                        <div class="event-title">Protein shake</div>
+                        <div class="event-note">Post-workout</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Monday - Rinse face -->
+            <div class="time-block cat-routine dur-10" data-days="0" data-id="rinse-mon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:55 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">💧</div>
+                    <div class="event-details">
+                        <div class="event-title">Rinse face</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Friday - Bike to Amped Fitness -->
+            <div class="time-block cat-fitness dur-12" data-days="4" data-id="bike-gym-fri-eve">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">5:00 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike to Amped Fitness</div>
+                        <div class="event-note">~12 min</div>
+                    </div>
+                    <span class="event-badge badge-sunset">🌅 Sunset 5:50</span>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Friday - Gym -->
+            <div class="time-block cat-fitness dur-60" data-days="4" data-id="gym-fri-eve">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">5:15 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🏋️</div>
+                    <div class="event-details">
+                        <div class="event-title">Gym — Weights</div>
+                        <div class="event-note">Evening session</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Friday - Bike home from gym -->
+            <div class="time-block cat-fitness dur-12" data-days="4" data-id="bike-home-fri-eve">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:15 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚴</div>
+                    <div class="event-details">
+                        <div class="event-title">Bike home</div>
+                        <div class="event-note">~12 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Friday - Protein shake -->
+            <div class="time-block cat-meals dur-10" data-days="4" data-id="shake-fri">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:30 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🥤</div>
+                    <div class="event-details">
+                        <div class="event-title">Protein shake</div>
+                        <div class="event-note">Post-workout</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Monday - Bouzouki practice -->
+            <div class="time-block cat-winddown dur-30" data-days="0" data-id="bouzouki-mon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:05 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🎸</div>
+                    <div class="event-details">
+                        <div class="event-title">Bouzouki practice</div>
+                        <div class="event-note">30 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Monday - Free time -->
+            <div class="time-block cat-winddown dur-45" data-days="0" data-id="free-mon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">7:35 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">✨</div>
+                    <div class="event-details">
+                        <div class="event-title">Free time</div>
+                        <div class="event-note">Until 8:30pm</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Monday - Sauna -->
+            <div class="time-block cat-sauna dur-30" data-days="0" data-id="sauna-mon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:30 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🧖</div>
+                    <div class="event-details">
+                        <div class="event-title">Dry Sauna</div>
+                        <div class="event-note">30 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Monday - Shower -->
+            <div class="time-block cat-routine dur-30" data-days="0" data-id="shower-eve-mon">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:00 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🚿</div>
+                    <div class="event-details">
+                        <div class="event-title">Shower</div>
+                        <div class="event-note">Post-sauna</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Evening work -->
+            <div class="time-block cat-work dur-90" data-days="1,2,3,4,5,6" data-id="work-evening">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">6:45 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">💼</div>
+                    <div class="event-details">
+                        <div class="event-title">BioCage Work</div>
+                        <div class="event-note">Evening block if needed</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Tu-Sun - Bouzouki practice -->
+            <div class="time-block cat-winddown dur-30" data-days="1,2,3,4,5,6" data-id="bouzouki">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:00 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🎸</div>
+                    <div class="event-details">
+                        <div class="event-title">Bouzouki practice</div>
+                        <div class="event-note">30 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Tu-Sun - Sauna -->
+            <div class="time-block cat-sauna dur-60" data-days="1,2,3,4,5,6" data-id="sauna">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">8:30 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🧖</div>
+                    <div class="event-details">
+                        <div class="event-title">Dry Sauna</div>
+                        <div class="event-note">3x/week, 1 hour</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Nightly facial routine -->
+            <div class="time-block cat-routine dur-15" data-days="0,1,2,3,4,5,6" data-id="facial-night">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:30 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">✨</div>
+                    <div class="event-details">
+                        <div class="event-title">Nightly facial routine</div>
+                        <div class="event-note">15 min</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Brush teeth -->
+            <div class="time-block cat-routine dur-5" data-days="0,1,2,3,4,5,6" data-id="brush-teeth">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:45 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">🪥</div>
+                    <div class="event-details">
+                        <div class="event-title">Brush teeth</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Read Bible - Monday -->
+            <div class="time-block cat-winddown dur-30" data-days="0" data-id="bible">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:50 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">📖</div>
+                    <div class="event-details">
+                        <div class="event-title">Read the Bible</div>
+                        <div class="event-note">No screens</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Read - Tu-Sun -->
+            <div class="time-block cat-winddown dur-30" data-days="1,2,3,4,5,6" data-id="read">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">9:50 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">📚</div>
+                    <div class="event-details">
+                        <div class="event-title">Read</div>
+                        <div class="event-note">No screens</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+
+            <!-- Sleep -->
+            <div class="time-block cat-sleep dur-60" data-days="0,1,2,3,4,5,6" data-id="sleep">
+                <div class="checkbox"></div>
+                <div class="time-col"><span class="time-text">10:30 PM</span></div>
+                <div class="event-col">
+                    <div class="event-icon">😴</div>
+                    <div class="event-details">
+                        <div class="event-title">Sleep</div>
+                    </div>
+                </div>
+                <span class="swipe-hint">✓</span>
+            </div>
+        </div>
+
+        <div class="todo-section">
+            <h3>To Schedule</h3>
+            <ul>
+                <li>🍞 Make bread</li>
+                <li>🇬🇷 Learn Greek / Portuguese</li>
+                <li>📖 Bible study</li>
+                <li>☦️ Orthodox study classes</li>
+                <li>🌱 Water plants</li>
+            </ul>
+        </div>
+
+        <button class="reset-btn" id="resetBtn">Reset Today's Tasks</button>
+    </div>
+
+    <script>
+        // Day names
+        const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        // Get current day (0 = Monday, 6 = Sunday)
+        function getCurrentDay() {
+            const jsDay = new Date().getDay(); // 0 = Sunday
+            return jsDay === 0 ? 6 : jsDay - 1; // Convert to 0 = Monday
+        }
+
+        // Get date key for storage
+        function getDateKey() {
+            const now = new Date();
+            return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        }
+
+        // Load completed tasks from storage
+        function loadCompletedTasks() {
+            const dateKey = getDateKey();
+            const stored = localStorage.getItem('completedTasks');
+            if (stored) {
+                const data = JSON.parse(stored);
+                if (data.date === dateKey) {
+                    return data.tasks;
+                }
+            }
+            return {};
+        }
+
+        // Save completed tasks
+        function saveCompletedTasks(tasks) {
+            localStorage.setItem('completedTasks', JSON.stringify({
+                date: getDateKey(),
+                tasks: tasks
+            }));
+        }
+
+        // State
+        let currentDay = getCurrentDay();
+        let completedTasks = loadCompletedTasks();
+
+        // Update current day display
+        function updateDayDisplay() {
+            document.querySelector('.current-day').textContent = dayNames[currentDay];
+        }
+
+        // Select day
+        function selectDay(dayIndex) {
+            currentDay = dayIndex;
+
+            // Update buttons
+            document.querySelectorAll('.day-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === dayIndex);
+            });
+
+            // Show/hide blocks
+            document.querySelectorAll('.time-block[data-days]').forEach(block => {
+                const days = block.dataset.days.split(',').map(Number);
+                block.classList.toggle('hidden', !days.includes(dayIndex));
+            });
+
+            updateDayDisplay();
+            updateProgress();
+            restoreCompletedState();
+        }
+
+        // Restore completed state from storage
+        function restoreCompletedState() {
+            document.querySelectorAll('.time-block[data-id]').forEach(block => {
+                const id = block.dataset.id;
+                const key = `${currentDay}-${id}`;
+                if (completedTasks[key]) {
+                    block.classList.add('completed');
+                } else {
+                    block.classList.remove('completed');
+                }
+            });
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const visibleBlocks = document.querySelectorAll('.time-block[data-days]:not(.hidden)');
+            const completedBlocks = document.querySelectorAll('.time-block[data-days]:not(.hidden).completed');
+
+            const total = visibleBlocks.length;
+            const completed = completedBlocks.length;
+            const percent = total > 0 ? (completed / total) * 100 : 0;
+
+            document.getElementById('progressFill').style.width = `${percent}%`;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = total;
+        }
+
+        // Toggle task completion
+        function toggleTask(block) {
+            const id = block.dataset.id;
+            const key = `${currentDay}-${id}`;
+
+            if (block.classList.contains('completed')) {
+                block.classList.remove('completed');
+                delete completedTasks[key];
+            } else {
+                block.classList.add('completed');
+                completedTasks[key] = true;
+            }
+
+            saveCompletedTasks(completedTasks);
+            updateProgress();
+        }
+
+        // Swipe handling
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let dragBlock = null;
+
+        function handleTouchStart(e) {
+            const block = e.target.closest('.time-block');
+            if (!block || block.classList.contains('completed')) return;
+
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            dragBlock = block;
+            block.classList.add('swiping');
+        }
+
+        function handleTouchMove(e) {
+            if (!isDragging || !dragBlock) return;
+
+            currentX = e.touches[0].clientX;
+            const diff = currentX - startX;
+
+            if (diff > 0) {
+                dragBlock.style.transform = `translateX(${Math.min(diff, 100)}px)`;
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (!isDragging || !dragBlock) return;
+
+            const diff = currentX - startX;
+            dragBlock.classList.remove('swiping');
+
+            if (diff > 80) {
+                // Complete the task with animation
+                dragBlock.classList.add('swipe-away');
+                setTimeout(() => {
+                    dragBlock.classList.remove('swipe-away');
+                    dragBlock.style.transform = '';
+                    toggleTask(dragBlock);
+                }, 300);
+            } else {
+                dragBlock.style.transform = '';
+            }
+
+            isDragging = false;
+            dragBlock = null;
+            startX = 0;
+            currentX = 0;
+        }
+
+        // Click handling (for desktop)
+        function handleClick(e) {
+            const block = e.target.closest('.time-block');
+            if (!block) return;
+
+            // Don't toggle if it was a swipe
+            if (Math.abs(currentX - startX) > 10) return;
+
+            toggleTask(block);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = getCurrentDay();
+
+            // Mark today's button
+            document.querySelectorAll('.day-btn').forEach((btn, i) => {
+                if (i === today) btn.classList.add('today');
+                btn.addEventListener('click', () => selectDay(i));
+            });
+
+            // Set up event listeners for schedule
+            const schedule = document.getElementById('schedule');
+            schedule.addEventListener('touchstart', handleTouchStart, { passive: true });
+            schedule.addEventListener('touchmove', handleTouchMove, { passive: true });
+            schedule.addEventListener('touchend', handleTouchEnd);
+            schedule.addEventListener('click', handleClick);
+
+            // Reset button
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                if (confirm('Reset all tasks for today?')) {
+                    // Only reset current day's tasks
+                    Object.keys(completedTasks).forEach(key => {
+                        if (key.startsWith(`${currentDay}-`)) {
+                            delete completedTasks[key];
+                        }
+                    });
+                    saveCompletedTasks(completedTasks);
+                    restoreCompletedState();
+                    updateProgress();
+                }
+            });
+
+            // Install prompt
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('installPrompt').classList.add('show');
+            });
+
+            document.getElementById('installBtn').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                    document.getElementById('installPrompt').classList.remove('show');
+                }
+            });
+
+            document.getElementById('dismissBtn').addEventListener('click', () => {
+                document.getElementById('installPrompt').classList.remove('show');
+            });
+
+            // Select today
+            selectDay(today);
+        });
+
+        // Check for day change every minute
+        setInterval(() => {
+            const today = getCurrentDay();
+            const todayBtn = document.querySelector('.day-btn.today');
+            const currentTodayIndex = Array.from(document.querySelectorAll('.day-btn')).indexOf(todayBtn);
+
+            if (currentTodayIndex !== today) {
+                // Day changed, update
+                document.querySelectorAll('.day-btn').forEach((btn, i) => {
+                    btn.classList.toggle('today', i === today);
+                });
+
+                // Reset completed tasks for new day
+                completedTasks = {};
+                saveCompletedTasks(completedTasks);
+
+                // Switch to new day
+                selectDay(today);
+            }
+        }, 60000);
+    </script>
 </body>
 </html>
